@@ -198,11 +198,19 @@ export default async function ProposalDetailPage({
         )}
       </div>
 
-      {/* Back */}
-      <div className="flex justify-start">
+      {/* Actions */}
+      <div className="flex justify-between">
         <Link href="/dashboard/proposals" className="px-4 py-2 text-sm text-slate-600 hover:text-slate-900 font-medium">
           ← Back to Proposals
         </Link>
+        {proposal.status !== "accepted" && (
+          <Link
+            href={`/dashboard/proposals/${proposal.id}/edit`}
+            className="px-4 py-2 text-sm border border-slate-300 text-slate-700 rounded-lg font-medium hover:bg-slate-50"
+          >
+            Edit Proposal
+          </Link>
+        )}
       </div>
     </div>
   );
