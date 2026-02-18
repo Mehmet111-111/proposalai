@@ -6,13 +6,10 @@ import {
   Clock,
   CheckCircle,
   ArrowLeft,
-  Send,
-  Copy,
-  Trash2,
-  Eye,
   ExternalLink,
 } from "lucide-react";
 import Link from "next/link";
+import DeleteProposalButton from "./DeleteButton";
 
 export default async function ProposalDetailPage({
   params,
@@ -49,27 +46,28 @@ export default async function ProposalDetailPage({
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <Link href="/dashboard/proposals" className="p-2 hover:bg-slate-100 rounded-lg transition-colors">
             <ArrowLeft className="w-5 h-5 text-slate-600" />
           </Link>
           <div>
-            <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-bold text-slate-900">{proposal.title}</h1>
+            <div className="flex items-center gap-3 flex-wrap">
+              <h1 className="text-xl sm:text-2xl font-bold text-slate-900">{proposal.title}</h1>
               <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${statusColors[proposal.status] || statusColors.draft}`}>
                 {proposal.status.charAt(0).toUpperCase() + proposal.status.slice(1)}
               </span>
             </div>
-            <p className="text-slate-500 mt-1">
-              Created {new Date(proposal.created_at).toLocaleDateString()} • {proposal.currency}
+            <p className="text-slate-500 mt-1 text-sm">
+              Created {new Date(proposal.created_at).toLocaleDateString("en-US")} • {proposal.currency}
             </p>
           </div>
         </div>
+        <DeleteProposalButton proposalId={proposal.id} />
       </div>
 
       {/* Client Info & Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="bg-white rounded-xl border border-slate-200 p-5">
           <p className="text-xs font-semibold text-slate-500 uppercase mb-2">Client</p>
           <p className="text-sm font-medium text-slate-900">{proposal.clients?.name || "No client"}</p>
@@ -86,7 +84,7 @@ export default async function ProposalDetailPage({
         <div className="bg-white rounded-xl border border-slate-200 p-5">
           <p className="text-xs font-semibold text-slate-500 uppercase mb-2">Valid Until</p>
           <p className="text-sm font-medium text-slate-900">
-            {proposal.valid_until ? new Date(proposal.valid_until).toLocaleDateString() : "No expiry"}
+            {proposal.valid_until ? new Date(proposal.valid_until).toLocaleDateString("en-US") : "No expiry"}
           </p>
           <p className="text-xs text-slate-500">
             {proposal.valid_until && new Date(proposal.valid_until) > new Date() ? "Active" : "Expired"}
@@ -96,18 +94,18 @@ export default async function ProposalDetailPage({
 
       {/* Public Link */}
       {proposal.slug && (
-        <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <ExternalLink className="w-5 h-5 text-emerald-600" />
-            <div>
+        <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <ExternalLink className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+            <div className="min-w-0">
               <p className="text-sm font-medium text-emerald-800">Client View Link</p>
-              <p className="text-xs text-emerald-600 font-mono">{publicUrl}</p>
+              <p className="text-xs text-emerald-600 font-mono truncate">{publicUrl}</p>
             </div>
           </div>
           <Link
             href={`/p/${proposal.slug}`}
             target="_blank"
-            className="text-xs px-3 py-1.5 bg-emerald-600 text-white rounded-lg font-medium hover:bg-emerald-700"
+            className="text-xs px-3 py-1.5 bg-emerald-600 text-white rounded-lg font-medium hover:bg-emerald-700 flex-shrink-0"
           >
             Preview
           </Link>
@@ -115,11 +113,10 @@ export default async function ProposalDetailPage({
       )}
 
       {/* Proposal Content */}
-      <div className="bg-white rounded-xl border border-slate-200 p-8">
-        <h2 className="text-2xl font-bold text-slate-900 mb-2">{content?.title}</h2>
+      <div className="bg-white rounded-xl border border-slate-200 p-6 sm:p-8">
+        <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mb-2">{content?.title}</h2>
         <p className="text-slate-600 mb-8">{content?.summary}</p>
 
-        {/* Scope */}
         {content?.scope && (
           <div className="mb-8">
             <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
@@ -137,7 +134,6 @@ export default async function ProposalDetailPage({
           </div>
         )}
 
-        {/* Timeline */}
         {content?.timeline && (
           <div className="mb-8">
             <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
@@ -167,7 +163,6 @@ export default async function ProposalDetailPage({
           </div>
         )}
 
-        {/* Packages */}
         {content?.packages && (
           <div className="mb-8">
             <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
@@ -195,7 +190,6 @@ export default async function ProposalDetailPage({
           </div>
         )}
 
-        {/* Terms */}
         {content?.terms && (
           <div className="p-4 bg-slate-50 rounded-lg">
             <h3 className="font-semibold text-slate-900 mb-2">Terms & Conditions</h3>
@@ -204,21 +198,11 @@ export default async function ProposalDetailPage({
         )}
       </div>
 
-      {/* Action Buttons */}
-      <div className="flex justify-between">
+      {/* Back */}
+      <div className="flex justify-start">
         <Link href="/dashboard/proposals" className="px-4 py-2 text-sm text-slate-600 hover:text-slate-900 font-medium">
           ← Back to Proposals
         </Link>
-        <div className="flex gap-3">
-          {proposal.status === "draft" && (
-            <Link
-              href={`/dashboard/proposals/${proposal.id}/edit`}
-              className="px-4 py-2 text-sm border border-slate-300 text-slate-700 rounded-lg font-medium hover:bg-slate-50"
-            >
-              Edit Proposal
-            </Link>
-          )}
-        </div>
       </div>
     </div>
   );
