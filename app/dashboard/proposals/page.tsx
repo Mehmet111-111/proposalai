@@ -92,6 +92,22 @@ export default async function ProposalsPage() {
                           >
                             View
                           </Link>
+                          {proposal.status !== "accepted" && (
+                            <Link
+                              href={`/dashboard/proposals/${proposal.id}/edit`}
+                              className="text-xs px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-medium transition-colors"
+                            >
+                              Edit
+                            </Link>
+                          )}
+                          {proposal.status === "draft" && (
+                            <Link
+                              href={`/dashboard/proposals/${proposal.id}/edit`}
+                              className="text-xs px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium transition-colors"
+                            >
+                              Send
+                            </Link>
+                          )}
                         </div>
                       </td>
                     </tr>
