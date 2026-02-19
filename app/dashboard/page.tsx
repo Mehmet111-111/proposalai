@@ -65,8 +65,16 @@ export default async function DashboardPage() {
     ?.filter((p) => p.status === "accepted")
     .reduce((sum, p) => sum + (p.total_amount || 0), 0) || 0;
   const totalClients = clients?.length || 0;
-  const proposalsThisMonth = profile?.proposals_this_month || 0;
-  const maxFreeProposals = profile?.subscription_plan === "free" ? 3 : 999;
+
+  // Count proposals this month (same logic as API)
+  const startOfMonth = new Date();
+  startOfMonth.setDate(1);
+  startOfMonth.setHours(0, 0, 0, 0);
+  const proposalsThisMonth = proposals?.filter(
+    (p) => new Date(p.created_at) >= startOfMonth
+  ).length || 0;
+  const plan = profile?.subscription_plan || "free";
+  const maxProposals = plan === "free" ? 3 : plan === "starter" ? 20 : 999;
 
   const { data: recentProposals } = await supabase
     .from("proposals")
@@ -117,10 +125,10 @@ export default async function DashboardPage() {
           <div className="flex items-center gap-3">
             <Clock className="w-5 h-5 text-amber-500" />
             <p className="text-sm text-amber-800">
-              <strong>{proposalsThisMonth}/{maxFreeProposals}</strong> free proposals used.
-              {proposalsThisMonth >= maxFreeProposals
+              <strong>{proposalsThisMonth}/{maxProposals}</strong> free proposals used.
+              {proposalsThisMonth >= maxProposals
                 ? " Upgrade to create more!"
-                : ` ${maxFreeProposals - proposalsThisMonth} remaining this month.`}
+                : ` ${maxProposals - proposalsThisMonth} remaining this month.`}
             </p>
           </div>
           <Link href="/dashboard/settings" className="text-xs font-semibold text-amber-700 hover:text-amber-900 flex items-center gap-1 whitespace-nowrap">

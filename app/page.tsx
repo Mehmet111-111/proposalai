@@ -379,6 +379,8 @@ export default function LandingPage() {
             <div className="flex items-center gap-8">
               <a href="#features" className="text-sm text-slate-400 hover:text-slate-600 transition-colors">Features</a>
               <a href="#pricing" className="text-sm text-slate-400 hover:text-slate-600 transition-colors">Pricing</a>
+              <Link href="/privacy" className="text-sm text-slate-400 hover:text-slate-600 transition-colors">Privacy</Link>
+              <Link href="/terms" className="text-sm text-slate-400 hover:text-slate-600 transition-colors">Terms</Link>
               <Link href="/login" className="text-sm text-slate-400 hover:text-slate-600 transition-colors">Sign In</Link>
             </div>
             <p className="text-sm text-slate-400">© {currentYear} ProposalAI. All rights reserved.</p>

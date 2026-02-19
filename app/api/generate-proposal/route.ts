@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     // Check subscription limits
     const { data: profile } = await supabase
       .from("profiles")
-      .select("subscription_plan, proposals_this_month")
+      .select("subscription_plan")
       .eq("id", user.id)
       .single();
 
@@ -34,15 +34,27 @@ export async function POST(request: NextRequest) {
     };
 
     const plan = profile?.subscription_plan || "free";
-    const used = profile?.proposals_this_month || 0;
     const limit = limits[plan] || 3;
 
-    if (used >= limit) {
+    // Count proposals created this month (reliable, no cron needed)
+    const startOfMonth = new Date();
+    startOfMonth.setDate(1);
+    startOfMonth.setHours(0, 0, 0, 0);
+
+    const { count: used } = await supabase
+      .from("proposals")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", user.id)
+      .gte("created_at", startOfMonth.toISOString());
+
+    const usedCount = used || 0;
+
+    if (usedCount >= limit) {
       return NextResponse.json(
         {
           error: "Monthly proposal limit reached",
           limit,
-          used,
+          used: usedCount,
           plan,
         },
         { status: 403 }
@@ -157,17 +169,11 @@ IMPORTANT RULES:
       }
     }
 
-    // Increment proposals_this_month
-    await supabase
-      .from("profiles")
-      .update({ proposals_this_month: used + 1 })
-      .eq("id", user.id);
-
     return NextResponse.json({
       success: true,
       proposal: proposalContent,
       usage: {
-        used: used + 1,
+        used: usedCount + 1,
         limit,
         plan,
       },

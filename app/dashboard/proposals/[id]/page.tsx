@@ -8,11 +8,13 @@ import {
   CheckCircle,
   ArrowLeft,
   ExternalLink,
+  Download,
 } from "lucide-react";
 import Link from "next/link";
 import DeleteProposalButton from "./DeleteButton";
 import DuplicateProposalButton from "./DuplicateButton";
 import ShareLinkButton from "@/components/proposals/ShareLinkButton";
+import { formatPrice } from "@/lib/currency";
 
 export default async function ProposalDetailPage({
   params,
@@ -86,7 +88,7 @@ export default async function ProposalDetailPage({
         </div>
         <div className="bg-white rounded-xl border border-slate-200 p-5">
           <p className="text-xs font-semibold text-slate-500 uppercase mb-2">Total Amount</p>
-          <p className="text-2xl font-bold text-slate-900">${proposal.total_amount?.toLocaleString() || "0"}</p>
+          <p className="text-2xl font-bold text-slate-900">{formatPrice(proposal.total_amount || 0, proposal.currency)}</p>
           <p className="text-xs text-slate-500">Standard package</p>
         </div>
         <div className="bg-white rounded-xl border border-slate-200 p-5">
@@ -112,6 +114,13 @@ export default async function ProposalDetailPage({
               </div>
             </div>
             <div className="flex items-center gap-2 flex-shrink-0">
+              <Link
+                href={`/api/proposals/${proposal.id}/pdf`}
+                target="_blank"
+                className="text-xs px-3 py-1.5 bg-white border border-emerald-300 text-emerald-700 rounded-lg font-medium hover:bg-emerald-100 flex items-center gap-1"
+              >
+                <Download className="w-3 h-3" /> PDF
+              </Link>
               <Link
                 href={`/p/${proposal.slug}`}
                 target="_blank"

@@ -22,6 +22,7 @@ import {
   MessageCircle,
 } from "lucide-react";
 import Link from "next/link";
+import { getCurrencySymbol } from "@/lib/currency";
 
 export default function EditProposalPage() {
   const router = useRouter();
@@ -303,7 +304,7 @@ export default function EditProposalPage() {
                 className="w-full font-bold text-slate-900 border border-slate-300 rounded px-2 py-1.5 mb-2 focus:ring-2 focus:ring-emerald-500"
               />
               <div className="flex items-center gap-1 mb-3">
-                <span className="text-lg font-bold text-slate-400">$</span>
+                <span className="text-lg font-bold text-slate-400">{getCurrencySymbol(proposal?.currency || "USD")}</span>
                 <input
                   type="number"
                   value={pkg.price}

@@ -24,6 +24,7 @@ import {
   Send,
 } from "lucide-react";
 import Link from "next/link";
+import { getCurrencySymbol } from "@/lib/currency";
 
 const projectTypes = [
   "Web Design & Development",
@@ -464,7 +465,7 @@ export default function NewProposalPage() {
                     ) : (
                       <>
                         <h4 className="font-bold text-slate-900">{pkg.name}</h4>
-                        <p className="text-3xl font-bold text-slate-900 my-3">${pkg.price?.toLocaleString()}</p>
+                        <p className="text-3xl font-bold text-slate-900 my-3">{getCurrencySymbol(form.currency)}{pkg.price?.toLocaleString()}</p>
                         <ul className="space-y-2">
                           {pkg.features?.map((f: string, j: number) => (
                             <li key={j} className="flex items-start gap-2 text-sm"><CheckCircle className="w-4 h-4 text-emerald-500 mt-0.5" /><span>{f}</span></li>

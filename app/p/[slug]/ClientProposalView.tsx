@@ -1,17 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { FileText, DollarSign, Clock, CheckCircle, Zap, User, XCircle, PartyPopper, Briefcase } from "lucide-react";
+import { FileText, DollarSign, Clock, CheckCircle, Zap, User, XCircle, PartyPopper, Briefcase, Download } from "lucide-react";
 import { formatPrice } from "@/lib/currency";
 
 export default function ClientProposalView({
   proposal,
   profile,
   shouldMarkViewed,
+  showWatermark = true,
 }: {
   proposal: any;
   profile: any;
   shouldMarkViewed?: boolean;
+  showWatermark?: boolean;
 }) {
   const content = proposal.content as any;
   const currency = proposal.currency || "USD";
@@ -80,11 +82,20 @@ export default function ClientProposalView({
               )}
             </div>
           </div>
-          <div className="text-right">
-            <span className="text-xs text-slate-400 block">Proposal for</span>
-            <span className="text-sm font-medium text-slate-700">
-              {proposal.clients?.name || "Client"}
-            </span>
+          <div className="flex items-center gap-3">
+            <a
+              href={`/api/proposals/${proposal.id}/pdf`}
+              target="_blank"
+              className="text-xs px-3 py-1.5 border border-slate-200 text-slate-600 rounded-lg font-medium hover:bg-slate-50 flex items-center gap-1.5 no-print"
+            >
+              <Download className="w-3.5 h-3.5" /> PDF
+            </a>
+            <div className="text-right">
+              <span className="text-xs text-slate-400 block">Proposal for</span>
+              <span className="text-sm font-medium text-slate-700">
+                {proposal.clients?.name || "Client"}
+              </span>
+            </div>
           </div>
         </div>
       </nav>
@@ -319,11 +330,14 @@ export default function ClientProposalView({
         )}
 
         {/* Footer */}
-        <div className="text-center py-8 no-print">
-          <p className="text-xs text-slate-300">
-            Powered by <span className="font-medium text-emerald-500">ProposalAI</span>
-          </p>
-        </div>
+        {showWatermark && (
+          <div className="text-center py-8 no-print">
+            <a href="https://proposalai.app" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs text-slate-300 hover:text-emerald-500 transition-colors">
+              <Zap className="w-3 h-3" />
+              Powered by <span className="font-medium">ProposalAI</span>
+            </a>
+          </div>
+        )}
       </div>
     </div>
   );

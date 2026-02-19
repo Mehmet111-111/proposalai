@@ -2,6 +2,7 @@ import { createServerSupabaseClient as createClient } from "@/lib/supabase/serve
 import { redirect } from "next/navigation";
 import { Receipt, DollarSign, Clock, CheckCircle, AlertCircle } from "lucide-react";
 import Link from "next/link";
+import { formatPrice } from "@/lib/currency";
 
 const statusConfig: Record<string, { label: string; color: string }> = {
   draft: { label: "Draft", color: "bg-slate-100 text-slate-700" },
@@ -45,7 +46,7 @@ export default async function InvoicesPage() {
               <DollarSign className="w-5 h-5 text-emerald-600" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-slate-900">${totalRevenue.toLocaleString()}</p>
+              <p className="text-2xl font-bold text-slate-900">{formatPrice(totalRevenue)}</p>
               <p className="text-xs text-slate-500">Total Collected</p>
             </div>
           </div>
@@ -56,7 +57,7 @@ export default async function InvoicesPage() {
               <Clock className="w-5 h-5 text-blue-600" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-slate-900">${pendingAmount.toLocaleString()}</p>
+              <p className="text-2xl font-bold text-slate-900">{formatPrice(pendingAmount)}</p>
               <p className="text-xs text-slate-500">Pending</p>
             </div>
           </div>
@@ -103,7 +104,7 @@ export default async function InvoicesPage() {
                         <p className="text-xs text-slate-500">{invoice.clients?.company || ""}</p>
                       </td>
                       <td className="px-6 py-4">
-                        <p className="text-sm font-semibold text-slate-900">${invoice.total_amount?.toLocaleString()}</p>
+                        <p className="text-sm font-semibold text-slate-900">{formatPrice(invoice.total_amount || 0, invoice.currency)}</p>
                       </td>
                       <td className="px-6 py-4">
                         <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${isOverdue ? "bg-red-100 text-red-700" : status.color}`}>
