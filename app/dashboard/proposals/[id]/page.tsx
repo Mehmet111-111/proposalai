@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import DeleteProposalButton from "./DeleteButton";
+import DuplicateProposalButton from "./DuplicateButton";
 import ShareLinkButton from "@/components/proposals/ShareLinkButton";
 
 export default async function ProposalDetailPage({
@@ -70,7 +71,10 @@ export default async function ProposalDetailPage({
             </p>
           </div>
         </div>
-        <DeleteProposalButton proposalId={proposal.id} />
+        <div className="flex items-center gap-2">
+          <DuplicateProposalButton proposalId={proposal.id} />
+          <DeleteProposalButton proposalId={proposal.id} />
+        </div>
       </div>
 
       {/* Client Info & Quick Stats */}

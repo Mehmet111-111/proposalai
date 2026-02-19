@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { FileText, Plus, Eye, Clock, CheckCircle, XCircle, Send } from "lucide-react";
 import Link from "next/link";
 import ShareLinkButton from "@/components/proposals/ShareLinkButton";
+import DuplicateProposalButton from "@/components/proposals/DuplicateButton";
 
 const statusConfig: Record<string, { label: string; color: string; icon: any }> = {
   draft: { label: "Draft", color: "bg-slate-100 text-slate-700", icon: FileText },
@@ -30,6 +31,23 @@ export default async function ProposalsPage() {
     .select("*, clients(name, company)")
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
+
+  // Auto-expire proposals past valid_until
+  const now = new Date();
+  const expiredIds = (proposals || [])
+    .filter((p) => p.valid_until && new Date(p.valid_until) < now && ["sent", "viewed"].includes(p.status))
+    .map((p) => p.id);
+
+  if (expiredIds.length > 0) {
+    await supabase
+      .from("proposals")
+      .update({ status: "expired" })
+      .in("id", expiredIds);
+    // Update local data
+    proposals?.forEach((p) => {
+      if (expiredIds.includes(p.id)) p.status = "expired";
+    });
+  }
 
   return (
     <div className="space-y-6">
@@ -115,6 +133,7 @@ export default async function ProposalsPage() {
                               Send
                             </Link>
                           )}
+                          <DuplicateProposalButton proposalId={proposal.id} />
                           {proposal.slug && proposal.status !== "draft" && (
                             <ShareLinkButton
                               url={`${appUrl}/p/${proposal.slug}`}

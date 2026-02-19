@@ -15,6 +15,7 @@ import {
   Zap,
   Menu,
   X,
+  BarChart3,
 } from "lucide-react";
 import { signOut } from "@/lib/auth-actions";
 
@@ -23,6 +24,7 @@ const navigation = [
   { name: "Proposals", href: "/dashboard/proposals", icon: FileText },
   { name: "Invoices", href: "/dashboard/invoices", icon: Receipt },
   { name: "Clients", href: "/dashboard/clients", icon: Users },
+  { name: "Analytics", href: "/dashboard/analytics", icon: BarChart3 },
   { name: "Notifications", href: "/dashboard/notifications", icon: Bell },
   { name: "Settings", href: "/dashboard/settings", icon: Settings },
 ];

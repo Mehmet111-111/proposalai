@@ -25,6 +25,25 @@ export default async function DashboardPage() {
     redirect("/login");
   }
 
+  // Check if needs onboarding
+  const { data: checkProfile } = await supabase
+    .from("profiles")
+    .select("full_name, business_name")
+    .eq("id", user.id)
+    .single();
+
+  if (checkProfile && !checkProfile.full_name && !checkProfile.business_name) {
+    redirect("/dashboard/onboarding");
+  }
+
+  // Auto-expire proposals past valid_until date
+  await supabase
+    .from("proposals")
+    .update({ status: "expired" })
+    .eq("user_id", user.id)
+    .in("status", ["sent", "viewed"])
+    .lt("valid_until", new Date().toISOString());
+
   const { data: profile } = await supabase
     .from("profiles")
     .select("*")

@@ -33,7 +33,7 @@ export default async function ClientsPage() {
             const proposalCount = client.proposals?.length || 0;
 
             return (
-              <div key={client.id} className="bg-white rounded-xl border border-slate-200 p-6 hover:shadow-md transition-shadow">
+              <Link key={client.id} href={`/dashboard/clients/${client.id}`} className="bg-white rounded-xl border border-slate-200 p-6 hover:shadow-md transition-shadow block">
                 <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center mb-4">
                   <span className="text-lg font-bold text-emerald-700">
                     {client.name?.charAt(0)?.toUpperCase() || "?"}
@@ -57,7 +57,7 @@ export default async function ClientsPage() {
                   </div>
                   <div className="text-xs font-semibold text-emerald-600">${totalRevenue.toLocaleString()}</div>
                 </div>
-              </div>
+              </Link>
             );
           })}
         </div>

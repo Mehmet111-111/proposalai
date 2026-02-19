@@ -27,7 +27,7 @@ export default function RegisterPage() {
       return;
     }
 
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: { data: { full_name: fullName } },
@@ -36,8 +36,15 @@ export default function RegisterPage() {
     if (error) {
       setError(error.message);
       setLoading(false);
-    } else {
+    } else if (data.user?.identities?.length === 0) {
+      setError("An account with this email already exists.");
+      setLoading(false);
+    } else if (data.session) {
+      // Auto-confirmed, go to dashboard
       router.push("/dashboard");
+    } else {
+      // Email confirmation required
+      router.push("/check-email");
     }
   };
 
