@@ -12,14 +12,17 @@ import {
 } from "lucide-react";
 
 export default function ShareLinkButton({
-  url,
+  slug,
   title,
 }: {
-  url: string;
+  slug: string;
   title: string;
 }) {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  // Always use window.location.origin for correct URL
+  const url = typeof window !== "undefined" ? `${window.location.origin}/p/${slug}` : `/p/${slug}`;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(url);

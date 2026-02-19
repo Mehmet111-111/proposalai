@@ -1,6 +1,6 @@
 import { createServerSupabaseClient as createClient } from "@/lib/supabase/server";
 import { redirect, notFound } from "next/navigation";
-import { headers } from "next/headers";
+
 import {
   FileText,
   DollarSign,
@@ -25,10 +25,7 @@ export default async function ProposalDetailPage({
 
   if (!user) redirect("/login");
 
-  const headersList = await headers();
-  const host = headersList.get("host") || "";
-  const protocol = headersList.get("x-forwarded-proto") || "https";
-  const appUrl = `${protocol}://${host}`;
+
 
   const { data: proposal } = await supabase
     .from("proposals")
@@ -49,7 +46,7 @@ export default async function ProposalDetailPage({
     expired: "bg-slate-100 text-slate-500",
   };
 
-  const publicUrl = `${appUrl}/p/${proposal.slug}`;
+
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -111,7 +108,7 @@ export default async function ProposalDetailPage({
               <ExternalLink className="w-5 h-5 text-emerald-600 flex-shrink-0" />
               <div className="min-w-0">
                 <p className="text-sm font-medium text-emerald-800">Client View Link</p>
-                <p className="text-xs text-emerald-600 font-mono truncate">{publicUrl}</p>
+                <p className="text-xs text-emerald-600 font-mono truncate">/p/{proposal.slug}</p>
               </div>
             </div>
             <div className="flex items-center gap-2 flex-shrink-0">
@@ -122,7 +119,7 @@ export default async function ProposalDetailPage({
               >
                 Preview
               </Link>
-              <ShareLinkButton url={publicUrl} title={proposal.title} />
+              <ShareLinkButton slug={proposal.slug} title={proposal.title} />
             </div>
           </div>
         </div>

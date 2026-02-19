@@ -1,6 +1,6 @@
 import { createServerSupabaseClient as createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { headers } from "next/headers";
+
 import { FileText, Plus, Eye, Clock, CheckCircle, XCircle, Send } from "lucide-react";
 import Link from "next/link";
 import ShareLinkButton from "@/components/proposals/ShareLinkButton";
@@ -22,10 +22,7 @@ export default async function ProposalsPage() {
 
   if (!user) redirect("/login");
 
-  const headersList = await headers();
-  const host = headersList.get("host") || "";
-  const protocol = headersList.get("x-forwarded-proto") || "https";
-  const appUrl = `${protocol}://${host}`;
+
 
   const { data: proposals } = await supabase
     .from("proposals")
@@ -137,7 +134,7 @@ export default async function ProposalsPage() {
                           <DuplicateProposalButton proposalId={proposal.id} />
                           {proposal.slug && proposal.status !== "draft" && (
                             <ShareLinkButton
-                              url={`${appUrl}/p/${proposal.slug}`}
+                              slug={proposal.slug}
                               title={proposal.title}
                             />
                           )}
