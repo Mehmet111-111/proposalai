@@ -22,6 +22,11 @@ export async function sendProposalEmail({
   totalAmount?: number;
   currency?: string;
 }) {
+  if (!resend) {
+    console.log("Resend not configured, skipping email");
+    return null;
+  }
+
   const currencySymbol = currency === "EUR" ? "€" : currency === "GBP" ? "£" : currency === "TRY" ? "₺" : "$";
 
   const { data, error } = await resend.emails.send({
@@ -90,6 +95,11 @@ export async function sendProposalAcceptedEmail({
   currency?: string;
   proposalUrl: string;
 }) {
+  if (!resend) {
+    console.log("Resend not configured, skipping email");
+    return null;
+  }
+
   const currencySymbol = currency === "EUR" ? "€" : currency === "GBP" ? "£" : currency === "TRY" ? "₺" : "$";
 
   const { data, error } = await resend.emails.send({
@@ -145,6 +155,11 @@ export async function sendProposalRejectedEmail({
   proposalTitle: string;
   proposalUrl: string;
 }) {
+  if (!resend) {
+    console.log("Resend not configured, skipping email");
+    return null;
+  }
+
   const { data, error } = await resend.emails.send({
     from: EMAIL_FROM,
     to: [to],
@@ -201,6 +216,11 @@ export async function sendInvoiceEmail({
   freelancerName: string;
   invoiceUrl: string;
 }) {
+  if (!resend) {
+    console.log("Resend not configured, skipping email");
+    return null;
+  }
+
   const currencySymbol = currency === "EUR" ? "€" : currency === "GBP" ? "£" : currency === "TRY" ? "₺" : "$";
 
   const { data, error } = await resend.emails.send({
