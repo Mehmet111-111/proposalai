@@ -529,9 +529,9 @@ export default function NewProposalPage() {
             <div className="mb-4">
               <label className="block text-xs font-medium text-slate-500 uppercase mb-1.5">Proposal Link</label>
               <div className="flex items-center gap-2">
-                <div className="flex-1 flex items-center gap-2 px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg">
+                <div className="flex-1 flex items-center gap-2 px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg min-w-0 overflow-hidden">
                   <Link2 className="w-4 h-4 text-slate-400 flex-shrink-0" />
-                  <span className="text-sm text-slate-700 truncate font-mono">{shareUrl}</span>
+                  <span className="text-sm text-slate-700 truncate font-mono block overflow-hidden text-ellipsis whitespace-nowrap">{shareUrl}</span>
                 </div>
                 <button
                   onClick={() => {
@@ -539,7 +539,7 @@ export default function NewProposalPage() {
                     setCopied(true);
                     setTimeout(() => setCopied(false), 2000);
                   }}
-                  className={`flex items-center gap-1.5 px-4 py-2.5 rounded-lg font-medium text-sm transition-colors ${
+                  className={`flex items-center gap-1.5 px-4 py-2.5 rounded-lg font-medium text-sm transition-colors flex-shrink-0 ${
                     copied
                       ? "bg-emerald-100 text-emerald-700"
                       : "bg-slate-900 text-white hover:bg-slate-800"
