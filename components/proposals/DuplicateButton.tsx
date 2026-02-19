@@ -3,10 +3,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Copy, Loader2 } from "lucide-react";
+import { useToast } from "@/components/ui/Toast";
 
 export default function DuplicateProposalButton({ proposalId }: { proposalId: string }) {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { toast } = useToast();
 
   const handleDuplicate = async () => {
     setLoading(true);
@@ -14,9 +16,13 @@ export default function DuplicateProposalButton({ proposalId }: { proposalId: st
       const res = await fetch(`/api/proposals/${proposalId}/duplicate`, { method: "POST" });
       const data = await res.json();
       if (data.success && data.proposal) {
+        toast("success", "Proposal duplicated successfully");
         router.push(`/dashboard/proposals/${data.proposal.id}/edit`);
+      } else {
+        toast("error", data.error || "Failed to duplicate proposal");
       }
     } catch {
+      toast("error", "Something went wrong");
     } finally {
       setLoading(false);
     }

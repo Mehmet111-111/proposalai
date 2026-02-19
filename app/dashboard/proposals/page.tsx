@@ -1,6 +1,5 @@
 import { createServerSupabaseClient as createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-
 import { FileText, Plus, Eye, Clock, CheckCircle, XCircle, Send } from "lucide-react";
 import Link from "next/link";
 import ShareLinkButton from "@/components/proposals/ShareLinkButton";
@@ -22,8 +21,6 @@ export default async function ProposalsPage() {
 
   if (!user) redirect("/login");
 
-
-
   const { data: proposals } = await supabase
     .from("proposals")
     .select("*, clients(name, company)")
@@ -41,7 +38,6 @@ export default async function ProposalsPage() {
       .from("proposals")
       .update({ status: "expired" })
       .in("id", expiredIds);
-    // Update local data
     proposals?.forEach((p) => {
       if (expiredIds.includes(p.id)) p.status = "expired";
     });
@@ -52,111 +48,147 @@ export default async function ProposalsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Proposals</h1>
-          <p className="text-slate-500 mt-1">Manage all your proposals in one place</p>
+          <p className="text-slate-500 mt-1">{proposals?.length || 0} total proposals</p>
         </div>
         <Link
           href="/dashboard/proposals/new"
-          className="flex items-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium transition-colors"
+          className="flex items-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-medium transition-all hover:shadow-lg hover:shadow-emerald-200"
         >
           <Plus className="w-4 h-4" />
-          New Proposal
+          <span className="hidden sm:inline">New Proposal</span>
+          <span className="sm:hidden">New</span>
         </Link>
       </div>
 
       {proposals && proposals.length > 0 ? (
-        <div className="bg-white rounded-xl border border-slate-200">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-slate-200">
-                  <th className="text-left px-6 py-3 text-xs font-semibold text-slate-500 uppercase">Proposal</th>
-                  <th className="text-left px-6 py-3 text-xs font-semibold text-slate-500 uppercase">Client</th>
-                  <th className="text-left px-6 py-3 text-xs font-semibold text-slate-500 uppercase">Amount</th>
-                  <th className="text-left px-6 py-3 text-xs font-semibold text-slate-500 uppercase">Status</th>
-                  <th className="text-left px-6 py-3 text-xs font-semibold text-slate-500 uppercase">Date</th>
-                  <th className="text-left px-6 py-3 text-xs font-semibold text-slate-500 uppercase">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {proposals.map((proposal: any) => {
-                  const status = statusConfig[proposal.status] || statusConfig.draft;
-                  const StatusIcon = status.icon;
-                  return (
-                    <tr key={proposal.id} className="hover:bg-slate-50 transition-colors">
-                      <td className="px-6 py-4">
-                        <p className="text-sm font-medium text-slate-900">{proposal.title}</p>
-                        <p className="text-xs text-slate-500">{proposal.currency}</p>
-                      </td>
-                      <td className="px-6 py-4">
-                        <p className="text-sm text-slate-900">{proposal.clients?.name || "—"}</p>
-                        <p className="text-xs text-slate-500">{proposal.clients?.company || ""}</p>
-                      </td>
-                      <td className="px-6 py-4">
-                        <p className="text-sm font-semibold text-slate-900">
-                          {formatPrice(proposal.total_amount || 0, proposal.currency)}
-                        </p>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className={`inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full font-medium ${status.color}`}>
-                          <StatusIcon className="w-3 h-3" />
-                          {status.label}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <p className="text-sm text-slate-500">
-                          {new Date(proposal.created_at).toLocaleDateString()}
-                        </p>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-2">
-                          <Link
-                            href={`/dashboard/proposals/${proposal.id}`}
-                            className="text-xs px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-medium transition-colors"
-                          >
-                            View
+        <>
+          {/* Desktop Table */}
+          <div className="hidden lg:block bg-white rounded-2xl border border-slate-100">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-slate-100">
+                    <th className="text-left px-6 py-3 text-xs font-semibold text-slate-400 uppercase">Proposal</th>
+                    <th className="text-left px-6 py-3 text-xs font-semibold text-slate-400 uppercase">Client</th>
+                    <th className="text-left px-6 py-3 text-xs font-semibold text-slate-400 uppercase">Amount</th>
+                    <th className="text-left px-6 py-3 text-xs font-semibold text-slate-400 uppercase">Status</th>
+                    <th className="text-left px-6 py-3 text-xs font-semibold text-slate-400 uppercase">Date</th>
+                    <th className="text-left px-6 py-3 text-xs font-semibold text-slate-400 uppercase">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-50">
+                  {proposals.map((proposal: any) => {
+                    const status = statusConfig[proposal.status] || statusConfig.draft;
+                    const StatusIcon = status.icon;
+                    return (
+                      <tr key={proposal.id} className="hover:bg-slate-50/50 transition-colors">
+                        <td className="px-6 py-4">
+                          <Link href={`/dashboard/proposals/${proposal.id}`} className="hover:text-emerald-600 transition-colors">
+                            <p className="text-sm font-medium text-slate-900">{proposal.title}</p>
                           </Link>
-                          {proposal.status !== "accepted" && (
-                            <Link
-                              href={`/dashboard/proposals/${proposal.id}/edit`}
-                              className="text-xs px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-medium transition-colors"
-                            >
-                              Edit
+                        </td>
+                        <td className="px-6 py-4">
+                          <p className="text-sm text-slate-900">{proposal.clients?.name || "—"}</p>
+                          <p className="text-xs text-slate-400">{proposal.clients?.company || ""}</p>
+                        </td>
+                        <td className="px-6 py-4">
+                          <p className="text-sm font-semibold text-slate-900 tabular-nums">
+                            {formatPrice(proposal.total_amount || 0, proposal.currency)}
+                          </p>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className={`inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full font-medium ${status.color}`}>
+                            <StatusIcon className="w-3 h-3" />
+                            {status.label}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <p className="text-sm text-slate-400">
+                            {new Date(proposal.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                          </p>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-2">
+                            <Link href={`/dashboard/proposals/${proposal.id}`} className="text-xs px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-medium transition-colors">
+                              View
                             </Link>
-                          )}
-                          {proposal.status === "draft" && (
-                            <Link
-                              href={`/dashboard/proposals/${proposal.id}/edit`}
-                              className="text-xs px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium transition-colors"
-                            >
-                              Send
-                            </Link>
-                          )}
-                          <DuplicateProposalButton proposalId={proposal.id} />
-                          {proposal.slug && proposal.status !== "draft" && (
-                            <ShareLinkButton
-                              slug={proposal.slug}
-                              title={proposal.title}
-                            />
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                            {proposal.status !== "accepted" && (
+                              <Link href={`/dashboard/proposals/${proposal.id}/edit`} className="text-xs px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-medium transition-colors">
+                                Edit
+                              </Link>
+                            )}
+                            <DuplicateProposalButton proposalId={proposal.id} />
+                            {proposal.slug && proposal.status !== "draft" && (
+                              <ShareLinkButton slug={proposal.slug} title={proposal.title} />
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
+
+          {/* Mobile Cards */}
+          <div className="lg:hidden space-y-3">
+            {proposals.map((proposal: any) => {
+              const status = statusConfig[proposal.status] || statusConfig.draft;
+              const StatusIcon = status.icon;
+              return (
+                <div key={proposal.id} className="bg-white rounded-2xl border border-slate-100 p-4 hover:shadow-md transition-shadow">
+                  <div className="flex items-start justify-between mb-3">
+                    <Link href={`/dashboard/proposals/${proposal.id}`} className="min-w-0 flex-1">
+                      <p className="text-sm font-semibold text-slate-900 truncate">{proposal.title}</p>
+                      <p className="text-xs text-slate-400 mt-0.5">
+                        {proposal.clients?.name || "No client"}{proposal.clients?.company ? ` · ${proposal.clients.company}` : ""}
+                      </p>
+                    </Link>
+                    <span className={`inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full font-medium flex-shrink-0 ml-3 ${status.color}`}>
+                      <StatusIcon className="w-3 h-3" />
+                      {status.label}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between mb-3">
+                    <p className="text-lg font-bold text-slate-900 tabular-nums">
+                      {formatPrice(proposal.total_amount || 0, proposal.currency)}
+                    </p>
+                    <p className="text-xs text-slate-400">
+                      {new Date(proposal.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2 pt-3 border-t border-slate-50 flex-wrap">
+                    <Link href={`/dashboard/proposals/${proposal.id}`} className="text-xs px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-medium transition-colors">
+                      View
+                    </Link>
+                    {proposal.status !== "accepted" && (
+                      <Link href={`/dashboard/proposals/${proposal.id}/edit`} className="text-xs px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-medium transition-colors">
+                        Edit
+                      </Link>
+                    )}
+                    <DuplicateProposalButton proposalId={proposal.id} />
+                    {proposal.slug && proposal.status !== "draft" && (
+                      <ShareLinkButton slug={proposal.slug} title={proposal.title} />
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </>
       ) : (
-        <div className="bg-white rounded-xl border border-slate-200 py-16 text-center">
-          <FileText className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+        <div className="bg-white rounded-2xl border border-slate-100 py-20 text-center">
+          <div className="w-20 h-20 bg-slate-50 rounded-2xl flex items-center justify-center mx-auto mb-5">
+            <FileText className="w-10 h-10 text-slate-200" />
+          </div>
           <h2 className="text-lg font-semibold text-slate-900">No proposals yet</h2>
-          <p className="text-slate-500 mt-2 max-w-md mx-auto">
+          <p className="text-slate-400 mt-2 max-w-sm mx-auto">
             Create your first AI-powered proposal and start winning more clients.
           </p>
           <Link
             href="/dashboard/proposals/new"
-            className="inline-flex items-center gap-2 mt-6 px-6 py-3 bg-emerald-600 text-white rounded-lg font-medium hover:bg-emerald-700 transition-colors"
+            className="inline-flex items-center gap-2 mt-6 px-6 py-3 bg-emerald-600 text-white rounded-xl font-medium hover:bg-emerald-700 transition-all hover:shadow-lg hover:shadow-emerald-200"
           >
             <Plus className="w-4 h-4" />
             Create Your First Proposal

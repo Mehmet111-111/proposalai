@@ -3,22 +3,27 @@
 import { useState } from "react";
 import { Trash2, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/Toast";
 
 export default function DeleteProposalButton({ proposalId }: { proposalId: string }) {
   const [confirming, setConfirming] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const router = useRouter();
+  const { toast } = useToast();
 
   const handleDelete = async () => {
     setDeleting(true);
     try {
       const res = await fetch(`/api/proposals/${proposalId}/delete`, { method: "DELETE" });
       if (res.ok) {
+        toast("success", "Proposal deleted");
         router.push("/dashboard/proposals");
         router.refresh();
+      } else {
+        toast("error", "Failed to delete proposal");
       }
-    } catch (err) {
-      console.error(err);
+    } catch {
+      toast("error", "Something went wrong");
     } finally {
       setDeleting(false);
     }

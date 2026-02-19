@@ -10,6 +10,7 @@ import {
   MessageCircle,
   X,
 } from "lucide-react";
+import { useToast } from "@/components/ui/Toast";
 
 export default function ShareLinkButton({
   slug,
@@ -20,6 +21,7 @@ export default function ShareLinkButton({
 }) {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const { toast } = useToast();
 
   // Always use window.location.origin for correct URL
   const url = typeof window !== "undefined" ? `${window.location.origin}/p/${slug}` : `/p/${slug}`;
@@ -27,6 +29,7 @@ export default function ShareLinkButton({
   const handleCopy = () => {
     navigator.clipboard.writeText(url);
     setCopied(true);
+    toast("success", "Link copied to clipboard");
     setTimeout(() => setCopied(false), 2000);
   };
 

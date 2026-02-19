@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { User, Building, Globe, Palette, Save, CheckCircle, Loader2, CreditCard, Zap, Crown } from "lucide-react";
 import { initializePaddle } from "@paddle/paddle-js";
+import { useToast } from "@/components/ui/Toast";
 
 const PLANS = [
   {
@@ -51,6 +52,7 @@ export default function SettingsPage() {
   const [userId, setUserId] = useState("");
   const [userEmail, setUserEmail] = useState("");
   const [currentPlan, setCurrentPlan] = useState("free");
+  const { toast } = useToast();
   const [profile, setProfile] = useState({
     full_name: "",
     business_name: "",
@@ -116,10 +118,13 @@ export default function SettingsPage() {
       });
       if (res.ok) {
         setSaved(true);
+        toast("success", "Settings saved successfully");
         setTimeout(() => setSaved(false), 3000);
+      } else {
+        toast("error", "Failed to save settings");
       }
-    } catch (err) {
-      console.error("Failed to save");
+    } catch {
+      toast("error", "Something went wrong");
     } finally {
       setSaving(false);
     }
