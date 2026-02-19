@@ -1,48 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { User, Building, Globe, Palette, Save, CheckCircle, Loader2, CreditCard, Zap, Crown } from "lucide-react";
+import { User, Building, Globe, Palette, Save, CheckCircle, Loader2, CreditCard, Zap, Crown, Star } from "lucide-react";
 import { initializePaddle } from "@paddle/paddle-js";
 import { useToast } from "@/components/ui/Toast";
-
-const PLANS = [
-  {
-    key: "free",
-    name: "Free",
-    price: "$0",
-    period: "forever",
-    proposals: 3,
-    features: ["3 proposals/month", "Basic templates", "Email notifications", "ProposalAI watermark"],
-  },
-  {
-    key: "starter",
-    name: "Starter",
-    price: "$12",
-    period: "/month",
-    proposals: 20,
-    priceId: process.env.NEXT_PUBLIC_PADDLE_STARTER_PRICE_ID || "",
-    features: ["20 proposals/month", "Remove watermark", "Proposal tracking", "5 templates", "Client management"],
-  },
-  {
-    key: "pro",
-    name: "Pro",
-    price: "$29",
-    period: "/month",
-    proposals: 999,
-    priceId: process.env.NEXT_PUBLIC_PADDLE_PRO_PRICE_ID || "",
-    popular: true,
-    features: ["Unlimited proposals", "Smart invoicing", "Custom branding", "Analytics dashboard", "All templates", "Priority support"],
-  },
-  {
-    key: "agency",
-    name: "Agency",
-    price: "$79",
-    period: "/month",
-    proposals: 999,
-    priceId: process.env.NEXT_PUBLIC_PADDLE_AGENCY_PRICE_ID || "",
-    features: ["Everything in Pro", "5 team members", "Client portal", "API access", "White label", "Dedicated support"],
-  },
-];
+import { PADDLE_PLANS } from "@/lib/paddle";
 
 export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
@@ -52,6 +14,7 @@ export default function SettingsPage() {
   const [userId, setUserId] = useState("");
   const [userEmail, setUserEmail] = useState("");
   const [currentPlan, setCurrentPlan] = useState("free");
+  const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">("monthly");
   const { toast } = useToast();
   const [profile, setProfile] = useState({
     full_name: "",
@@ -70,7 +33,7 @@ export default function SettingsPage() {
   const initPaddle = async () => {
     try {
       const clientToken = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN;
-      const environment = process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT as "sandbox" | "production" || "sandbox";
+      const environment = (process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT as "sandbox" | "production") || "sandbox";
       if (clientToken) {
         const paddleInstance = await initializePaddle({
           token: clientToken,
@@ -130,15 +93,21 @@ export default function SettingsPage() {
     }
   };
 
-  const handleUpgrade = (priceId: string) => {
-    if (!paddle || !priceId) {
-      alert("Payment system is not configured yet. Please set up Paddle price IDs.");
+  const handleUpgrade = (planKey: string) => {
+    const plan = PADDLE_PLANS[planKey as keyof typeof PADDLE_PLANS];
+    if (!plan || !paddle) {
+      toast("error", "Payment system not available");
       return;
     }
+    const priceId = billingPeriod === "yearly" ? plan.yearlyPriceId : plan.monthlyPriceId;
     paddle.Checkout.open({
       items: [{ priceId, quantity: 1 }],
       customData: { user_id: userId },
       customer: { email: userEmail },
+      settings: {
+        successUrl: `${window.location.origin}/dashboard/settings?upgraded=true`,
+        theme: "light",
+      },
     });
   };
 
@@ -149,6 +118,46 @@ export default function SettingsPage() {
       </div>
     );
   }
+
+  const plans = [
+    {
+      key: "free",
+      name: "Free",
+      monthlyPrice: "$0",
+      yearlyPrice: "$0",
+      period: "forever",
+      proposals: 3,
+      features: ["3 proposals/month", "Basic templates", "Email notifications", "ProposalAI watermark"],
+    },
+    {
+      key: "starter",
+      name: "Starter",
+      monthlyPrice: "$9",
+      yearlyPrice: "$90",
+      yearlySave: "Save $18",
+      proposals: 20,
+      features: PADDLE_PLANS.starter.features as unknown as string[],
+    },
+    {
+      key: "pro",
+      name: "Pro",
+      monthlyPrice: "$19",
+      yearlyPrice: "$190",
+      yearlySave: "Save $38",
+      popular: true,
+      proposals: 999,
+      features: PADDLE_PLANS.pro.features as unknown as string[],
+    },
+    {
+      key: "agency",
+      name: "Agency",
+      monthlyPrice: "$39",
+      yearlyPrice: "$390",
+      yearlySave: "Save $78",
+      proposals: 999,
+      features: PADDLE_PLANS.agency.features as unknown as string[],
+    },
+  ];
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
@@ -269,33 +278,64 @@ export default function SettingsPage() {
 
       {/* Subscription Section */}
       <div className="bg-white rounded-xl border border-slate-200 p-6">
-        <h2 className="text-lg font-semibold text-slate-900 mb-6 flex items-center gap-2">
-          <CreditCard className="w-5 h-5 text-emerald-600" />
-          Subscription
-        </h2>
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
+            <CreditCard className="w-5 h-5 text-emerald-600" />
+            Subscription
+          </h2>
+          {/* Billing Toggle */}
+          <div className="flex items-center gap-2 bg-slate-100 rounded-lg p-1">
+            <button
+              onClick={() => setBillingPeriod("monthly")}
+              className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+                billingPeriod === "monthly"
+                  ? "bg-white text-slate-900 shadow-sm"
+                  : "text-slate-500 hover:text-slate-700"
+              }`}
+            >
+              Monthly
+            </button>
+            <button
+              onClick={() => setBillingPeriod("yearly")}
+              className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors flex items-center gap-1 ${
+                billingPeriod === "yearly"
+                  ? "bg-white text-slate-900 shadow-sm"
+                  : "text-slate-500 hover:text-slate-700"
+              }`}
+            >
+              Yearly
+              <span className="text-[10px] text-emerald-600 font-bold">-17%</span>
+            </button>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {PLANS.map((plan) => {
+          {plans.map((plan) => {
             const isCurrent = currentPlan === plan.key;
             const isUpgrade = !isCurrent && plan.key !== "free";
+            const isDowngrade = !isCurrent && plan.key === "free" && currentPlan !== "free";
+            const price = billingPeriod === "yearly" ? plan.yearlyPrice : plan.monthlyPrice;
+            const period = plan.key === "free" ? "forever" : billingPeriod === "yearly" ? "/year" : "/month";
+
             return (
               <div
                 key={plan.key}
-                className={`rounded-xl border-2 p-5 relative ${
+                className={`rounded-xl border-2 p-5 relative transition-all ${
                   isCurrent
                     ? "border-emerald-500 bg-emerald-50"
                     : plan.popular
-                      ? "border-emerald-300"
-                      : "border-slate-200"
+                      ? "border-emerald-300 hover:border-emerald-400"
+                      : "border-slate-200 hover:border-slate-300"
                 }`}
               >
                 {isCurrent && (
-                  <div className="absolute -top-2.5 left-4 px-2 py-0.5 bg-emerald-500 text-white text-xs font-bold rounded">
+                  <div className="absolute -top-2.5 left-4 px-2 py-0.5 bg-emerald-500 text-white text-[10px] font-bold rounded">
                     Current Plan
                   </div>
                 )}
                 {plan.popular && !isCurrent && (
-                  <div className="absolute -top-2.5 left-4 px-2 py-0.5 bg-emerald-500 text-white text-xs font-bold rounded">
-                    Most Popular
+                  <div className="absolute -top-2.5 left-4 px-2 py-0.5 bg-emerald-500 text-white text-[10px] font-bold rounded flex items-center gap-1">
+                    <Star className="w-3 h-3" /> Most Popular
                   </div>
                 )}
                 <div className="flex items-center gap-2 mb-2">
@@ -304,10 +344,14 @@ export default function SettingsPage() {
                    <Zap className="w-4 h-4 text-emerald-500" />}
                   <h3 className="font-semibold text-slate-900">{plan.name}</h3>
                 </div>
-                <div className="mb-3">
-                  <span className="text-2xl font-bold text-slate-900">{plan.price}</span>
-                  <span className="text-sm text-slate-500">{plan.period}</span>
+                <div className="mb-1">
+                  <span className="text-2xl font-bold text-slate-900">{price}</span>
+                  <span className="text-sm text-slate-500">{period}</span>
                 </div>
+                {billingPeriod === "yearly" && plan.yearlySave && (
+                  <p className="text-xs text-emerald-600 font-medium mb-3">{plan.yearlySave}</p>
+                )}
+                {(!plan.yearlySave || billingPeriod === "monthly") && <div className="mb-3" />}
                 <ul className="space-y-1.5 mb-4">
                   {plan.features.map((f) => (
                     <li key={f} className="flex items-start gap-1.5 text-xs text-slate-600">
@@ -318,14 +362,18 @@ export default function SettingsPage() {
                 </ul>
                 {isUpgrade && (
                   <button
-                    onClick={() => handleUpgrade((plan as any).priceId)}
-                    className="w-full py-2 bg-emerald-600 text-white text-sm font-medium rounded-lg hover:bg-emerald-700 transition-colors"
+                    onClick={() => handleUpgrade(plan.key)}
+                    className={`w-full py-2 text-sm font-medium rounded-lg transition-colors ${
+                      plan.popular
+                        ? "bg-emerald-600 text-white hover:bg-emerald-700"
+                        : "bg-slate-900 text-white hover:bg-slate-800"
+                    }`}
                   >
                     Upgrade to {plan.name}
                   </button>
                 )}
                 {isCurrent && plan.key !== "free" && (
-                  <p className="text-xs text-center text-emerald-600 font-medium">Active subscription</p>
+                  <p className="text-xs text-center text-emerald-600 font-medium py-2">Active subscription</p>
                 )}
               </div>
             );

@@ -61,15 +61,15 @@ const plans = [
   },
   {
     name: "Starter",
-    price: "$12",
+    price: "$9",
     period: "/month",
-    features: ["20 proposals/month", "Remove watermark", "Proposal tracking", "Client management", "5 templates"],
+    features: ["20 proposals/month", "Remove watermark", "Proposal tracking", "Client management", "5 templates", "Email support"],
     cta: "Start Free Trial",
     popular: false,
   },
   {
     name: "Pro",
-    price: "$29",
+    price: "$19",
     period: "/month",
     features: ["Unlimited proposals", "Smart invoicing", "Custom branding", "Analytics dashboard", "All templates", "Priority support"],
     cta: "Start Free Trial",
@@ -77,7 +77,7 @@ const plans = [
   },
   {
     name: "Agency",
-    price: "$79",
+    price: "$39",
     period: "/month",
     features: ["Everything in Pro", "5 team members", "Client portal", "API access", "White label", "Dedicated support"],
     cta: "Contact Sales",

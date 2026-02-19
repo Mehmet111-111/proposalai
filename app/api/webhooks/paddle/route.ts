@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { getPlanByPriceId } from "@/lib/paddle";
 
 // Service role client to bypass RLS
 const supabase = createClient(
@@ -7,24 +8,14 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-// Map Paddle price IDs to plan names
-function getPlanFromPriceId(priceId: string): string {
-  const priceMap: Record<string, string> = {
-    [process.env.NEXT_PUBLIC_PADDLE_STARTER_PRICE_ID || "pri_starter"]: "starter",
-    [process.env.NEXT_PUBLIC_PADDLE_PRO_PRICE_ID || "pri_pro"]: "pro",
-    [process.env.NEXT_PUBLIC_PADDLE_AGENCY_PRICE_ID || "pri_agency"]: "agency",
-  };
-  return priceMap[priceId] || "free";
-}
-
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const eventType = body.event_type;
 
-    console.log(`[Paddle Webhook] Event: ${eventType}`);
+    console.log(`[Paddle Webhook] Event: ${eventType}`, JSON.stringify(body.data?.custom_data));
 
-    // Extract customer email from event data
+    // Extract user_id from custom_data (passed during checkout)
     const customData = body.data?.custom_data;
     const userId = customData?.user_id;
     
@@ -36,9 +27,10 @@ export async function POST(request: NextRequest) {
     switch (eventType) {
       case "subscription.created":
       case "subscription.updated": {
-        const status = body.data?.status; // active, paused, canceled
+        const status = body.data?.status;
         const priceId = body.data?.items?.[0]?.price?.id;
-        const plan = getPlanFromPriceId(priceId);
+        const result = getPlanByPriceId(priceId || "");
+        const plan = result?.key || "free";
         const subscriptionId = body.data?.id;
 
         if (status === "active") {
@@ -51,13 +43,20 @@ export async function POST(request: NextRequest) {
             })
             .eq("id", userId);
 
+          // Create notification
+          await supabase.from("notifications").insert({
+            user_id: userId,
+            type: "proposal_accepted",
+            title: `Upgraded to ${result?.plan.name || plan}! 🎉`,
+            message: `Your subscription is now active. Enjoy your new features!`,
+            link: "/dashboard/settings",
+          });
+
           console.log(`[Paddle] User ${userId} upgraded to ${plan}`);
-        } else if (status === "canceled" || status === "paused") {
+        } else if (status === "canceled" || status === "paused" || status === "past_due") {
           await supabase
             .from("profiles")
-            .update({
-              subscription_plan: "free",
-            })
+            .update({ subscription_plan: "free" })
             .eq("id", userId);
 
           console.log(`[Paddle] User ${userId} downgraded to free (${status})`);
@@ -76,7 +75,6 @@ export async function POST(request: NextRequest) {
       }
 
       case "transaction.completed": {
-        // Payment received - could log or notify
         console.log(`[Paddle] Transaction completed for user ${userId}`);
         break;
       }
