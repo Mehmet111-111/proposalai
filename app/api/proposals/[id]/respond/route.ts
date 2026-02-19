@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { sendProposalAcceptedEmail, sendProposalRejectedEmail } from "@/lib/email";
+
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
 // Use service role to bypass RLS
 const supabase = createClient(
@@ -29,6 +32,18 @@ export async function POST(
     if (!proposal) {
       return NextResponse.json({ error: "Proposal not found" }, { status: 404 });
     }
+
+    // Get freelancer profile and email
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("full_name, business_name, email")
+      .eq("id", proposal.user_id)
+      .single();
+
+    // Get freelancer email from auth.users
+    const { data: authUser } = await supabase.auth.admin.getUserById(proposal.user_id);
+    const freelancerEmail = authUser?.user?.email || profile?.email;
+    const freelancerName = profile?.business_name || profile?.full_name || "Freelancer";
 
     if (action === "accept") {
       const content = proposal.content as any;
@@ -71,6 +86,7 @@ export async function POST(
         due_date: dueDate,
       });
 
+      // Create notification
       await supabase.from("notifications").insert({
         user_id: proposal.user_id,
         type: "proposal_accepted",
@@ -79,12 +95,31 @@ export async function POST(
         link: `/dashboard/proposals/${proposal.id}`,
       });
 
+      // Send email to freelancer
+      if (freelancerEmail) {
+        try {
+          await sendProposalAcceptedEmail({
+            to: freelancerEmail,
+            freelancerName,
+            clientName: clientName || "Client",
+            proposalTitle: proposal.title,
+            selectedPackage: selectedPackage || "Standard",
+            totalAmount,
+            currency: proposal.currency,
+            proposalUrl: `${APP_URL}/dashboard/proposals/${proposal.id}`,
+          });
+        } catch (emailErr) {
+          console.error("Failed to send accepted email:", emailErr);
+        }
+      }
+
       return NextResponse.json({
         success: true,
         message: "Proposal accepted! Invoice has been generated.",
         invoiceNumber,
       });
     } else {
+      // REJECT
       await supabase
         .from("proposals")
         .update({ status: "rejected" })
@@ -97,6 +132,21 @@ export async function POST(
         message: `${clientName || "Client"} declined "${proposal.title}"`,
         link: `/dashboard/proposals/${proposal.id}`,
       });
+
+      // Send email to freelancer
+      if (freelancerEmail) {
+        try {
+          await sendProposalRejectedEmail({
+            to: freelancerEmail,
+            freelancerName,
+            clientName: clientName || "Client",
+            proposalTitle: proposal.title,
+            proposalUrl: `${APP_URL}/dashboard/proposals/${proposal.id}`,
+          });
+        } catch (emailErr) {
+          console.error("Failed to send rejected email:", emailErr);
+        }
+      }
 
       return NextResponse.json({ success: true, message: "Proposal declined." });
     }

@@ -2,6 +2,7 @@ import { createServerSupabaseClient as createClient } from "@/lib/supabase/serve
 import { redirect } from "next/navigation";
 import { FileText, Plus, Eye, Clock, CheckCircle, XCircle, Send } from "lucide-react";
 import Link from "next/link";
+import ShareLinkButton from "@/components/proposals/ShareLinkButton";
 
 const statusConfig: Record<string, { label: string; color: string; icon: any }> = {
   draft: { label: "Draft", color: "bg-slate-100 text-slate-700", icon: FileText },
@@ -107,6 +108,12 @@ export default async function ProposalsPage() {
                             >
                               Send
                             </Link>
+                          )}
+                          {proposal.slug && proposal.status !== "draft" && (
+                            <ShareLinkButton
+                              url={`${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/p/${proposal.slug}`}
+                              title={proposal.title}
+                            />
                           )}
                         </div>
                       </td>

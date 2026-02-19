@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import DeleteProposalButton from "./DeleteButton";
+import ShareLinkButton from "@/components/proposals/ShareLinkButton";
 
 export default async function ProposalDetailPage({
   params,
@@ -94,21 +95,26 @@ export default async function ProposalDetailPage({
 
       {/* Public Link */}
       {proposal.slug && (
-        <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-3 min-w-0">
-            <ExternalLink className="w-5 h-5 text-emerald-600 flex-shrink-0" />
-            <div className="min-w-0">
-              <p className="text-sm font-medium text-emerald-800">Client View Link</p>
-              <p className="text-xs text-emerald-600 font-mono truncate">{publicUrl}</p>
+        <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3 min-w-0">
+              <ExternalLink className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-emerald-800">Client View Link</p>
+                <p className="text-xs text-emerald-600 font-mono truncate">{publicUrl}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <Link
+                href={`/p/${proposal.slug}`}
+                target="_blank"
+                className="text-xs px-3 py-1.5 bg-white border border-emerald-300 text-emerald-700 rounded-lg font-medium hover:bg-emerald-100"
+              >
+                Preview
+              </Link>
+              <ShareLinkButton url={publicUrl} title={proposal.title} />
             </div>
           </div>
-          <Link
-            href={`/p/${proposal.slug}`}
-            target="_blank"
-            className="text-xs px-3 py-1.5 bg-emerald-600 text-white rounded-lg font-medium hover:bg-emerald-700 flex-shrink-0"
-          >
-            Preview
-          </Link>
         </div>
       )}
 

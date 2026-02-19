@@ -14,6 +14,12 @@ import {
   Plus,
   Trash2,
   Zap,
+  Link2,
+  Copy,
+  Check,
+  X,
+  Mail,
+  MessageCircle,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -28,6 +34,9 @@ export default function EditProposalPage() {
   const [success, setSuccess] = useState("");
   const [proposal, setProposal] = useState<any>(null);
   const [content, setContent] = useState<any>(null);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [shareData, setShareData] = useState<{ url: string; emailSent: boolean; message: string } | null>(null);
+  const [copied, setCopied] = useState(false);
   const [status, setStatus] = useState("");
 
   useEffect(() => {
@@ -80,20 +89,35 @@ export default function EditProposalPage() {
     setError("");
     setSuccess("");
     try {
+      // First save the content
       const res = await fetch(`/api/proposals/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           title: content.title,
           content,
-          status: newStatus || status,
+          status: newStatus === "sent" ? undefined : (newStatus || status),
         }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
-      
+
+      // If sending, use the send endpoint (handles email + status update)
       if (newStatus === "sent") {
-        router.push(`/dashboard/proposals/${id}`);
+        const sendRes = await fetch(`/api/proposals/${id}/send`, {
+          method: "POST",
+        });
+        const sendData = await sendRes.json();
+        if (!sendRes.ok) throw new Error(sendData.error);
+        
+        // Show share modal with link
+        setShareData({
+          url: sendData.publicUrl || `${window.location.origin}/p/${proposal.slug}`,
+          emailSent: sendData.emailSent || false,
+          message: sendData.message || "",
+        });
+        setShowShareModal(true);
+        setStatus("sent");
       } else {
         setSuccess("Proposal saved successfully!");
         setStatus(data.proposal?.status || status);
@@ -354,6 +378,96 @@ export default function EditProposalPage() {
           )}
         </div>
       </div>
+
+      {/* Share Modal */}
+      {showShareModal && shareData && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 relative">
+            <button
+              onClick={() => { setShowShareModal(false); router.push(`/dashboard/proposals/${id}`); }}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="text-center mb-6">
+              <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <CheckCircle className="w-7 h-7 text-emerald-600" />
+              </div>
+              <h3 className="text-lg font-bold text-slate-900">Proposal Sent!</h3>
+              {shareData.emailSent ? (
+                <p className="text-sm text-slate-500 mt-1 flex items-center justify-center gap-1">
+                  <Mail className="w-3.5 h-3.5 text-emerald-500" />
+                  Email sent to client
+                </p>
+              ) : (
+                <p className="text-sm text-slate-500 mt-1">Share the link below with your client</p>
+              )}
+            </div>
+
+            {/* Copy Link */}
+            <div className="mb-4">
+              <label className="block text-xs font-medium text-slate-500 uppercase mb-1.5">Proposal Link</label>
+              <div className="flex items-center gap-2">
+                <div className="flex-1 flex items-center gap-2 px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg">
+                  <Link2 className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                  <span className="text-sm text-slate-700 truncate font-mono">{shareData.url}</span>
+                </div>
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(shareData.url);
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2000);
+                  }}
+                  className={`flex items-center gap-1.5 px-4 py-2.5 rounded-lg font-medium text-sm transition-colors ${
+                    copied
+                      ? "bg-emerald-100 text-emerald-700"
+                      : "bg-slate-900 text-white hover:bg-slate-800"
+                  }`}
+                >
+                  {copied ? <><Check className="w-4 h-4" /> Copied!</> : <><Copy className="w-4 h-4" /> Copy</>}
+                </button>
+              </div>
+            </div>
+
+            {/* Share Options */}
+            <div className="space-y-2">
+              <a
+                href={`https://wa.me/?text=${encodeURIComponent(`Hi! Here's your proposal: ${shareData.url}`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 w-full px-4 py-3 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
+              >
+                <MessageCircle className="w-5 h-5 text-green-600" />
+                <span className="text-sm font-medium text-slate-700">Share via WhatsApp</span>
+              </a>
+              <a
+                href={`mailto:?subject=${encodeURIComponent(`Proposal: ${content?.title || "Project Proposal"}`)}&body=${encodeURIComponent(`Hi,\n\nPlease review the proposal here:\n${shareData.url}\n\nBest regards`)}`}
+                className="flex items-center gap-3 w-full px-4 py-3 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
+              >
+                <Mail className="w-5 h-5 text-blue-600" />
+                <span className="text-sm font-medium text-slate-700">Share via Email App</span>
+              </a>
+              <a
+                href={shareData.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 w-full px-4 py-3 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
+              >
+                <Link2 className="w-5 h-5 text-slate-500" />
+                <span className="text-sm font-medium text-slate-700">Preview Proposal</span>
+              </a>
+            </div>
+
+            <button
+              onClick={() => { setShowShareModal(false); router.push(`/dashboard/proposals/${id}`); }}
+              className="w-full mt-4 py-2.5 text-sm text-slate-500 hover:text-slate-700 font-medium"
+            >
+              Done
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -16,7 +16,8 @@ export async function GET() {
       .eq("id", user.id)
       .single();
 
-    return NextResponse.json({ profile });
+    // Include email from auth user
+    return NextResponse.json({ profile: { ...profile, email: user.email } });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
