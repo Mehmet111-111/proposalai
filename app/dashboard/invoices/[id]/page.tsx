@@ -33,7 +33,7 @@ export default async function InvoiceDetailPage({
   const items = (invoice.items as any[]) || [];
   const isOverdue = invoice.status === "sent" && new Date(invoice.due_date) < new Date();
 
-  const statusDisplay = {
+  const statusMap: Record<string, { label: string; color: string; icon: any }> = {
     draft: { label: "Draft", color: "bg-slate-100 text-slate-700", icon: Clock },
     sent: isOverdue
       ? { label: "Overdue", color: "bg-red-100 text-red-700", icon: AlertCircle }
@@ -41,7 +41,8 @@ export default async function InvoiceDetailPage({
     paid: { label: "Paid", color: "bg-emerald-100 text-emerald-700", icon: CheckCircle },
     overdue: { label: "Overdue", color: "bg-red-100 text-red-700", icon: AlertCircle },
     cancelled: { label: "Cancelled", color: "bg-slate-100 text-slate-500", icon: Clock },
-  }[invoice.status] || { label: invoice.status, color: "bg-slate-100 text-slate-700", icon: Clock };
+  };
+  const statusDisplay = statusMap[invoice.status as string] || { label: invoice.status, color: "bg-slate-100 text-slate-700", icon: Clock };
 
   const StatusIcon = statusDisplay.icon;
 
