@@ -1,5 +1,6 @@
 import { createServerSupabaseClient as createClient } from "@/lib/supabase/server";
 import { redirect, notFound } from "next/navigation";
+import { headers } from "next/headers";
 import {
   FileText,
   DollarSign,
@@ -23,6 +24,11 @@ export default async function ProposalDetailPage({
 
   if (!user) redirect("/login");
 
+  const headersList = await headers();
+  const host = headersList.get("host") || "";
+  const protocol = headersList.get("x-forwarded-proto") || "https";
+  const appUrl = `${protocol}://${host}`;
+
   const { data: proposal } = await supabase
     .from("proposals")
     .select("*, clients(name, company, email)")
@@ -42,7 +48,7 @@ export default async function ProposalDetailPage({
     expired: "bg-slate-100 text-slate-500",
   };
 
-  const publicUrl = `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/p/${proposal.slug}`;
+  const publicUrl = `${appUrl}/p/${proposal.slug}`;
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
