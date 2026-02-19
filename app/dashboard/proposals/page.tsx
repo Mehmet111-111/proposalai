@@ -5,6 +5,7 @@ import { FileText, Plus, Eye, Clock, CheckCircle, XCircle, Send } from "lucide-r
 import Link from "next/link";
 import ShareLinkButton from "@/components/proposals/ShareLinkButton";
 import DuplicateProposalButton from "@/components/proposals/DuplicateButton";
+import { formatPrice } from "@/lib/currency";
 
 const statusConfig: Record<string, { label: string; color: string; icon: any }> = {
   draft: { label: "Draft", color: "bg-slate-100 text-slate-700", icon: FileText },
@@ -95,7 +96,7 @@ export default async function ProposalsPage() {
                       </td>
                       <td className="px-6 py-4">
                         <p className="text-sm font-semibold text-slate-900">
-                          ${proposal.total_amount?.toLocaleString() || "0"}
+                          {formatPrice(proposal.total_amount || 0, proposal.currency)}
                         </p>
                       </td>
                       <td className="px-6 py-4">

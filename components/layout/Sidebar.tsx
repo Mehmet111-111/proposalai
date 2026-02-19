@@ -35,19 +35,19 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <>
       {/* Logo */}
-      <div className="flex items-center gap-2 px-6 py-5 border-b border-slate-800">
-        <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center">
+      <div className="flex items-center gap-2.5 px-6 py-5 border-b border-slate-800/50">
+        <div className="w-9 h-9 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-900/30">
           <Zap className="w-5 h-5 text-white" />
         </div>
-        <span className="text-lg font-bold">ProposalAI</span>
+        <span className="text-lg font-bold text-white">ProposalAI</span>
       </div>
 
       {/* New Proposal Button */}
-      <div className="px-4 py-4">
+      <div className="px-4 py-5">
         <Link
           href="/dashboard/proposals/new"
           onClick={onNavigate}
-          className="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium transition-colors"
+          className="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-medium transition-all hover:shadow-lg hover:shadow-emerald-900/30"
         >
           <Plus className="w-4 h-4" />
           New Proposal
@@ -55,21 +55,25 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-3 space-y-1">
+      <nav className="flex-1 px-3 space-y-0.5">
         {navigation.map((item) => {
-          const isActive = pathname === item.href || pathname?.startsWith(item.href + "/");
+          const isActive = pathname === item.href || 
+            (item.href !== "/dashboard" && pathname?.startsWith(item.href + "/"));
           return (
             <Link
               key={item.name}
               href={item.href}
               onClick={onNavigate}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+              className={`group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all relative ${
                 isActive
-                  ? "bg-slate-800 text-emerald-400"
-                  : "text-slate-400 hover:bg-slate-800 hover:text-white"
+                  ? "bg-emerald-500/10 text-emerald-400"
+                  : "text-slate-400 hover:bg-white/5 hover:text-slate-200"
               }`}
             >
-              <item.icon className="w-5 h-5" />
+              {isActive && (
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-emerald-500 rounded-r-full" />
+              )}
+              <item.icon className={`w-[18px] h-[18px] transition-colors ${isActive ? "text-emerald-400" : "text-slate-500 group-hover:text-slate-300"}`} />
               {item.name}
             </Link>
           );
@@ -77,13 +81,13 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
       </nav>
 
       {/* Bottom - Sign Out */}
-      <div className="px-4 py-4 border-t border-slate-800">
+      <div className="px-4 py-4 border-t border-slate-800/50">
         <form action={signOut}>
           <button
             type="submit"
-            className="flex items-center gap-3 px-3 py-2 w-full text-sm text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+            className="flex items-center gap-3 px-3 py-2.5 w-full text-sm text-slate-500 hover:text-red-400 rounded-xl hover:bg-red-500/5 transition-all"
           >
-            <LogOut className="w-5 h-5" />
+            <LogOut className="w-[18px] h-[18px]" />
             Sign Out
           </button>
         </form>
@@ -100,7 +104,7 @@ export default function Sidebar() {
       {/* Mobile hamburger button */}
       <button
         onClick={() => setMobileOpen(true)}
-        className="lg:hidden fixed top-3 left-3 z-50 p-2 bg-slate-900 text-white rounded-lg shadow-lg"
+        className="lg:hidden fixed top-3.5 left-3 z-50 p-2 bg-slate-900 text-white rounded-xl shadow-lg hover:bg-slate-800 transition-colors"
       >
         <Menu className="w-5 h-5" />
       </button>
@@ -108,16 +112,16 @@ export default function Sidebar() {
       {/* Mobile overlay */}
       {mobileOpen && (
         <div
-          className="lg:hidden fixed inset-0 bg-black/50 z-50"
+          className="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 transition-opacity"
           onClick={() => setMobileOpen(false)}
         >
           <aside
-            className="w-64 h-full bg-slate-900 text-white flex flex-col"
+            className="w-64 h-full bg-slate-900 text-white flex flex-col shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <button
               onClick={() => setMobileOpen(false)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-white"
+              className="absolute top-4 right-4 p-1 text-slate-400 hover:text-white rounded-lg hover:bg-white/10 transition-colors"
             >
               <X className="w-5 h-5" />
             </button>

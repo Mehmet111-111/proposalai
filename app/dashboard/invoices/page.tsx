@@ -133,12 +133,17 @@ export default async function InvoicesPage() {
           </div>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-slate-200 py-16 text-center">
-          <Receipt className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-          <h2 className="text-lg font-semibold text-slate-900">No invoices yet</h2>
-          <p className="text-slate-500 mt-2 max-w-md mx-auto">
-            Invoices are auto-generated when clients accept your proposals.
+        <div className="bg-white rounded-2xl border border-slate-100 py-20 text-center">
+          <div className="w-20 h-20 bg-slate-50 rounded-2xl flex items-center justify-center mx-auto mb-5">
+            <Receipt className="w-10 h-10 text-slate-300" />
+          </div>
+          <h2 className="text-lg font-bold text-slate-900">No invoices yet</h2>
+          <p className="text-slate-400 mt-2 max-w-sm mx-auto">
+            Invoices are automatically generated when clients accept your proposals. Create a proposal to get started.
           </p>
+          <Link href="/dashboard/proposals/new" className="inline-flex items-center gap-2 mt-6 px-5 py-2.5 bg-emerald-600 text-white rounded-xl font-medium hover:bg-emerald-700 transition-colors text-sm">
+            Create a Proposal
+          </Link>
         </div>
       )}
     </div>
