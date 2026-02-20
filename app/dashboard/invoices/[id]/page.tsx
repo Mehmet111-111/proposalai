@@ -1,6 +1,7 @@
 import { createServerSupabaseClient as createClient } from "@/lib/supabase/server";
 import { redirect, notFound } from "next/navigation";
-import { ArrowLeft, DollarSign, CheckCircle, Clock, AlertCircle } from "lucide-react";
+import { ArrowLeft, DollarSign, CheckCircle, Clock, AlertCircle, Download } from "lucide-react";
+import { formatPrice } from "@/lib/currency";
 import Link from "next/link";
 import InvoiceActions from "./InvoiceActions";
 
@@ -67,7 +68,16 @@ export default async function InvoiceDetailPage({
             </p>
           </div>
         </div>
-        <InvoiceActions invoiceId={invoice.id} status={invoice.status} clientEmail={invoice.clients?.email} />
+        <div className="flex items-center gap-2">
+          <Link
+            href={`/api/invoices/${invoice.id}/pdf`}
+            target="_blank"
+            className="flex items-center gap-1.5 text-xs px-3 py-2 bg-white border border-slate-200 text-slate-700 rounded-lg font-medium hover:bg-slate-50"
+          >
+            <Download className="w-3.5 h-3.5" /> PDF
+          </Link>
+          <InvoiceActions invoiceId={invoice.id} status={invoice.status} clientEmail={invoice.clients?.email} />
+        </div>
       </div>
 
       {/* Invoice Card */}
@@ -127,8 +137,8 @@ export default async function InvoiceDetailPage({
                 <tr key={i}>
                   <td className="px-4 py-3 text-sm text-slate-900">{item.description}</td>
                   <td className="px-4 py-3 text-sm text-slate-600 text-right">{item.quantity}</td>
-                  <td className="px-4 py-3 text-sm text-slate-600 text-right">${item.unit_price?.toLocaleString()}</td>
-                  <td className="px-4 py-3 text-sm font-medium text-slate-900 text-right">${item.total?.toLocaleString()}</td>
+                  <td className="px-4 py-3 text-sm text-slate-600 text-right">{formatPrice(item.unit_price || 0, invoice.currency)}</td>
+                  <td className="px-4 py-3 text-sm font-medium text-slate-900 text-right">{formatPrice(item.total || 0, invoice.currency)}</td>
                 </tr>
               ))}
             </tbody>
@@ -140,17 +150,17 @@ export default async function InvoiceDetailPage({
           <div className="w-64 space-y-2">
             <div className="flex justify-between text-sm">
               <span className="text-slate-500">Subtotal</span>
-              <span className="text-slate-900">${invoice.subtotal?.toLocaleString()}</span>
+              <span className="text-slate-900">{formatPrice(invoice.subtotal || 0, invoice.currency)}</span>
             </div>
             {invoice.tax_rate > 0 && (
               <div className="flex justify-between text-sm">
                 <span className="text-slate-500">Tax ({invoice.tax_rate}%)</span>
-                <span className="text-slate-900">${invoice.tax_amount?.toLocaleString()}</span>
+                <span className="text-slate-900">{formatPrice(invoice.tax_amount || 0, invoice.currency)}</span>
               </div>
             )}
             <div className="flex justify-between text-lg font-bold pt-2 border-t border-slate-200">
               <span className="text-slate-900">Total</span>
-              <span className="text-slate-900">${invoice.total_amount?.toLocaleString()}</span>
+              <span className="text-slate-900">{formatPrice(invoice.total_amount || 0, invoice.currency)}</span>
             </div>
           </div>
         </div>
