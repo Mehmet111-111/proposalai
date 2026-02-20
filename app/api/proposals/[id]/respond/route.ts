@@ -64,7 +64,7 @@ export async function POST(
       const invoiceNumber = `INV-${Date.now().toString(36).toUpperCase()}`;
       const dueDate = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString();
 
-      await supabase.from("invoices").insert({
+      const { data: newInvoice } = await supabase.from("invoices").insert({
         user_id: proposal.user_id,
         client_id: proposal.client_id,
         proposal_id: proposal.id,
@@ -84,7 +84,7 @@ export async function POST(
         currency: proposal.currency || "USD",
         status: "sent",
         due_date: dueDate,
-      });
+      }).select("id").single();
 
       // Create notification
       await supabase.from("notifications").insert({
@@ -131,7 +131,7 @@ export async function POST(
               currency: proposal.currency,
               dueDate,
               freelancerName,
-              invoiceUrl: `${APP_URL}/dashboard/invoices`,
+              invoiceUrl: `${APP_URL}/dashboard/invoices/${newInvoice?.id || ""}`,
             });
           } catch (invoiceEmailErr) {
             console.error("Failed to send invoice email:", invoiceEmailErr);
