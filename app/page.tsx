@@ -154,18 +154,18 @@ export default function LandingPage() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <div className="min-h-screen bg-[#FAFBFC] relative">
-      {/* Global subtle dot grid */}
+    <div className="min-h-screen bg-white relative">
+      {/* Subtle grid pattern across entire page */}
       <div
-        className="fixed inset-0 pointer-events-none z-0 opacity-[0.35]"
+        className="fixed inset-0 pointer-events-none z-0"
         style={{
-          backgroundImage: `radial-gradient(circle, #c7ccd4 0.7px, transparent 0.7px)`,
-          backgroundSize: "28px 28px",
+          backgroundImage: `linear-gradient(to right, #f1f5f9 1px, transparent 1px), linear-gradient(to bottom, #f1f5f9 1px, transparent 1px)`,
+          backgroundSize: "64px 64px",
         }}
       />
 
       {/* ====== NAVBAR ====== */}
-      <nav className="fixed top-0 w-full z-50 bg-[#FAFBFC]/80 backdrop-blur-xl border-b border-slate-100">
+      <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-slate-100">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5">
             <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center">
@@ -204,11 +204,15 @@ export default function LandingPage() {
       </nav>
 
       {/* ====== HERO ====== */}
-      <section className="pt-28 sm:pt-36 pb-16 px-4 relative z-10">
-        {/* Gradient blobs */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-gradient-to-br from-emerald-100/50 via-teal-50/40 to-transparent rounded-full blur-[100px] pointer-events-none" />
-        <div className="absolute top-20 -left-20 w-[300px] h-[300px] bg-gradient-to-r from-sky-100/30 to-transparent rounded-full blur-[80px] pointer-events-none" />
-        <div className="absolute top-10 -right-20 w-[250px] h-[250px] bg-gradient-to-l from-emerald-100/20 to-transparent rounded-full blur-[80px] pointer-events-none" />
+      <section className="pt-28 sm:pt-36 pb-16 px-4 relative z-10 overflow-hidden">
+        {/* Hero gradient mesh background */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-[-10%] left-[15%] w-[500px] h-[500px] bg-emerald-100 rounded-full mix-blend-multiply filter blur-[80px] opacity-40" />
+          <div className="absolute top-[0%] right-[15%] w-[400px] h-[400px] bg-teal-100 rounded-full mix-blend-multiply filter blur-[80px] opacity-30" />
+          <div className="absolute top-[20%] left-[40%] w-[350px] h-[350px] bg-sky-100 rounded-full mix-blend-multiply filter blur-[80px] opacity-25" />
+        </div>
+        {/* Fade out bottom */}
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white to-transparent pointer-events-none" />
 
         <div className="max-w-3xl mx-auto text-center relative">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-emerald-50 border border-emerald-100 rounded-full text-[13px] font-medium text-emerald-700 mb-6">
@@ -280,7 +284,7 @@ export default function LandingPage() {
       </section>
 
       {/* ====== HOW IT WORKS ====== */}
-      <section id="how-it-works" className="py-16 sm:py-20 px-4 bg-white/80 backdrop-blur-sm border-y border-slate-100 relative z-10">
+      <section id="how-it-works" className="py-16 sm:py-20 px-4 bg-slate-50/90 border-y border-slate-100 relative z-10">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
             <p className="text-xs font-semibold text-emerald-600 uppercase tracking-wider mb-2">
@@ -395,7 +399,7 @@ export default function LandingPage() {
       </section>
 
       {/* ====== FEATURES ====== */}
-      <section id="features" className="py-16 sm:py-20 px-4 bg-white/80 backdrop-blur-sm border-y border-slate-100 relative z-10">
+      <section id="features" className="py-16 sm:py-20 px-4 bg-slate-50/90 border-y border-slate-100 relative z-10">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
             <p className="text-xs font-semibold text-emerald-600 uppercase tracking-wider mb-2">
@@ -508,7 +512,7 @@ export default function LandingPage() {
       </section>
 
       {/* ====== FAQ ====== */}
-      <section id="faq" className="py-16 sm:py-20 px-4 bg-white/80 backdrop-blur-sm border-t border-slate-100 relative z-10">
+      <section id="faq" className="py-16 sm:py-20 px-4 bg-slate-50/90 border-t border-slate-100 relative z-10">
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-10">
             <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">
@@ -565,7 +569,7 @@ export default function LandingPage() {
       </section>
 
       {/* ====== FOOTER ====== */}
-      <footer className="py-8 border-t border-slate-100 px-4 bg-white/80 backdrop-blur-sm relative z-10">
+      <footer className="py-8 border-t border-slate-100 px-4 bg-white relative z-10">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-md flex items-center justify-center">
