@@ -61,6 +61,16 @@ export async function POST(request: NextRequest) {
 
       if (existingClient) {
         clientId = existingClient.id;
+        // Update email/company if provided
+        if (clientEmail || clientCompany) {
+          await supabase
+            .from("clients")
+            .update({
+              ...(clientEmail && { email: clientEmail }),
+              ...(clientCompany && { company: clientCompany }),
+            })
+            .eq("id", clientId);
+        }
       } else {
         const { data: newClient, error: clientError } = await supabase
           .from("clients")
