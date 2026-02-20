@@ -1,6 +1,6 @@
 import { resend, EMAIL_FROM } from "./resend";
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://proposalai.app";
 
 // ============================================
 // 1. Send Proposal to Client

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient as createClient } from "@/lib/supabase/server";
 import { sendProposalEmail } from "@/lib/email";
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://proposalai.app";
 
 export async function POST(
   request: NextRequest,

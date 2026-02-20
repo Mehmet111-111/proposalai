@@ -115,7 +115,7 @@ export async function POST(request: NextRequest) {
           .single();
 
         const freelancerName = profile?.business_name || profile?.full_name || "A freelancer";
-        const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://proposalai.app";
+        const APP_URL = "https://proposalai.app";
         const proposalUrl = `${APP_URL}/p/${slug}`;
 
         await sendProposalEmail({
