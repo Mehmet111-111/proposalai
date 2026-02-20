@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient as createClient } from "@/lib/supabase/server";
+import { sendProposalEmail } from "@/lib/email";
 
 // GET - List all proposals
 export async function GET() {
@@ -103,7 +104,37 @@ export async function POST(request: NextRequest) {
 
     if (error) throw error;
 
-    return NextResponse.json({ success: true, proposal });
+    // If status is "sent" and client has email, send email
+    let emailSent = false;
+    if (status === "sent" && clientEmail) {
+      try {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("full_name, business_name")
+          .eq("id", user.id)
+          .single();
+
+        const freelancerName = profile?.business_name || profile?.full_name || "A freelancer";
+        const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://proposalai.app";
+        const proposalUrl = `${APP_URL}/p/${slug}`;
+
+        await sendProposalEmail({
+          to: clientEmail,
+          clientName: clientName || "Client",
+          proposalTitle: title || content?.title || "Project Proposal",
+          freelancerName,
+          proposalUrl,
+          totalAmount,
+          currency,
+        });
+        emailSent = true;
+        console.log(`[Email] Proposal sent to ${clientEmail}`);
+      } catch (emailError: any) {
+        console.error("[Email] Send failed:", emailError.message);
+      }
+    }
+
+    return NextResponse.json({ success: true, proposal, emailSent });
   } catch (error: any) {
     console.error("Save proposal error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
