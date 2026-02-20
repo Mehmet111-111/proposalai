@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
-import { Inter, DM_Sans } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { ToastProvider } from "@/components/ui/Toast";
 
 const inter = Inter({ subsets: ["latin"] });
-const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-display", weight: ["400", "500", "600", "700", "800"] });
 
 export const metadata: Metadata = {
   title: "ProposalAI — AI-Powered Proposals for Freelancers",
@@ -40,7 +39,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="light" style={{ colorScheme: "light" }}>
-      <body className={`${inter.className} ${dmSans.variable} bg-white text-slate-900`}>
+      <body className={`${inter.className} bg-white text-slate-900`}>
         <ToastProvider>{children}</ToastProvider>
       </body>
     </html>
