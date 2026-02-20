@@ -155,14 +155,6 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-white relative">
-      {/* Subtle grid pattern across entire page */}
-      <div
-        className="fixed inset-0 pointer-events-none z-0"
-        style={{
-          backgroundImage: `linear-gradient(to right, #f1f5f9 1px, transparent 1px), linear-gradient(to bottom, #f1f5f9 1px, transparent 1px)`,
-          backgroundSize: "64px 64px",
-        }}
-      />
 
       {/* ====== NAVBAR ====== */}
       <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-slate-100">
