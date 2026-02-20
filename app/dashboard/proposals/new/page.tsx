@@ -94,10 +94,6 @@ export default function NewProposalPage() {
       if (!res.ok) throw new Error(data.error || "Failed to save");
 
       if (sendStatus === "sent" && data.proposal?.slug) {
-        // Try to send email via send endpoint
-        try {
-          await fetch(`/api/proposals/${data.proposal.id}/send`, { method: "POST" });
-        } catch {}
         // Show share modal
         setShareUrl(`${window.location.origin}/p/${data.proposal.slug}`);
         setShowShareModal(true);

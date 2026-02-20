@@ -131,7 +131,7 @@ export async function POST(
               currency: proposal.currency,
               dueDate,
               freelancerName,
-              invoiceUrl: `${APP_URL}/dashboard/invoices/${newInvoice?.id || ""}`,
+              invoiceUrl: `${APP_URL}/api/invoices/${newInvoice?.id || ""}/pdf`,
             });
           } catch (invoiceEmailErr) {
             console.error("Failed to send invoice email:", invoiceEmailErr);
