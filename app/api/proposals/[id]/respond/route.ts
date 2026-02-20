@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import { sendProposalAcceptedEmail, sendProposalRejectedEmail } from "@/lib/email";
+import { sendProposalAcceptedEmail, sendProposalRejectedEmail, sendInvoiceEmail } from "@/lib/email";
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+const APP_URL = "https://proposalai.app";
 
 // Use service role to bypass RLS
 const supabase = createClient(
@@ -106,10 +106,36 @@ export async function POST(
             selectedPackage: selectedPackage || "Standard",
             totalAmount,
             currency: proposal.currency,
-            proposalUrl: `${APP_URL}/dashboard/proposals/${proposal.id}`,
+            proposalUrl: `${APP_URL}/dashboard`,
           });
         } catch (emailErr) {
           console.error("Failed to send accepted email:", emailErr);
+        }
+      }
+
+      // Send invoice email to client
+      if (proposal.client_id) {
+        const { data: client } = await supabase
+          .from("clients")
+          .select("name, email")
+          .eq("id", proposal.client_id)
+          .single();
+
+        if (client?.email) {
+          try {
+            await sendInvoiceEmail({
+              to: client.email,
+              clientName: client.name || "Client",
+              invoiceNumber,
+              totalAmount,
+              currency: proposal.currency,
+              dueDate,
+              freelancerName,
+              invoiceUrl: `${APP_URL}/dashboard/invoices`,
+            });
+          } catch (invoiceEmailErr) {
+            console.error("Failed to send invoice email:", invoiceEmailErr);
+          }
         }
       }
 
@@ -141,7 +167,7 @@ export async function POST(
             freelancerName,
             clientName: clientName || "Client",
             proposalTitle: proposal.title,
-            proposalUrl: `${APP_URL}/dashboard/proposals/${proposal.id}`,
+            proposalUrl: `${APP_URL}/dashboard`,
           });
         } catch (emailErr) {
           console.error("Failed to send rejected email:", emailErr);
