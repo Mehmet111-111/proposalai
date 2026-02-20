@@ -154,9 +154,18 @@ export default function LandingPage() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#FAFBFC] relative">
+      {/* Global subtle dot grid */}
+      <div
+        className="fixed inset-0 pointer-events-none z-0 opacity-[0.35]"
+        style={{
+          backgroundImage: `radial-gradient(circle, #c7ccd4 0.7px, transparent 0.7px)`,
+          backgroundSize: "28px 28px",
+        }}
+      />
+
       {/* ====== NAVBAR ====== */}
-      <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-slate-100">
+      <nav className="fixed top-0 w-full z-50 bg-[#FAFBFC]/80 backdrop-blur-xl border-b border-slate-100">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5">
             <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center">
@@ -195,8 +204,11 @@ export default function LandingPage() {
       </nav>
 
       {/* ====== HERO ====== */}
-      <section className="pt-28 sm:pt-36 pb-16 px-4 relative">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[500px] bg-gradient-to-b from-emerald-50/60 to-transparent rounded-full blur-[100px] pointer-events-none" />
+      <section className="pt-28 sm:pt-36 pb-16 px-4 relative z-10">
+        {/* Gradient blobs */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-gradient-to-br from-emerald-100/50 via-teal-50/40 to-transparent rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute top-20 -left-20 w-[300px] h-[300px] bg-gradient-to-r from-sky-100/30 to-transparent rounded-full blur-[80px] pointer-events-none" />
+        <div className="absolute top-10 -right-20 w-[250px] h-[250px] bg-gradient-to-l from-emerald-100/20 to-transparent rounded-full blur-[80px] pointer-events-none" />
 
         <div className="max-w-3xl mx-auto text-center relative">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-emerald-50 border border-emerald-100 rounded-full text-[13px] font-medium text-emerald-700 mb-6">
@@ -268,7 +280,7 @@ export default function LandingPage() {
       </section>
 
       {/* ====== HOW IT WORKS ====== */}
-      <section id="how-it-works" className="py-16 sm:py-20 px-4 bg-slate-50 border-y border-slate-100">
+      <section id="how-it-works" className="py-16 sm:py-20 px-4 bg-white/80 backdrop-blur-sm border-y border-slate-100 relative z-10">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
             <p className="text-xs font-semibold text-emerald-600 uppercase tracking-wider mb-2">
@@ -383,7 +395,7 @@ export default function LandingPage() {
       </section>
 
       {/* ====== FEATURES ====== */}
-      <section id="features" className="py-16 sm:py-20 px-4 bg-slate-50 border-y border-slate-100">
+      <section id="features" className="py-16 sm:py-20 px-4 bg-white/80 backdrop-blur-sm border-y border-slate-100 relative z-10">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
             <p className="text-xs font-semibold text-emerald-600 uppercase tracking-wider mb-2">
@@ -496,7 +508,7 @@ export default function LandingPage() {
       </section>
 
       {/* ====== FAQ ====== */}
-      <section id="faq" className="py-16 sm:py-20 px-4 bg-slate-50 border-t border-slate-100">
+      <section id="faq" className="py-16 sm:py-20 px-4 bg-white/80 backdrop-blur-sm border-t border-slate-100 relative z-10">
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-10">
             <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">
@@ -529,7 +541,7 @@ export default function LandingPage() {
       </section>
 
       {/* ====== CTA ====== */}
-      <section className="py-16 sm:py-20 px-4 border-t border-slate-100">
+      <section className="py-16 sm:py-20 px-4 border-t border-slate-100 relative z-10">
         <div className="max-w-2xl mx-auto text-center">
           <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">
             Ready to create your first proposal?
@@ -553,7 +565,7 @@ export default function LandingPage() {
       </section>
 
       {/* ====== FOOTER ====== */}
-      <footer className="py-8 border-t border-slate-100 px-4">
+      <footer className="py-8 border-t border-slate-100 px-4 bg-white/80 backdrop-blur-sm relative z-10">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-md flex items-center justify-center">
