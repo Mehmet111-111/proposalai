@@ -47,7 +47,7 @@ export default async function ClientsPage() {
                   </div>
                   {acceptedProposals.length > 0 && (
                     <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-lg">
-                      ${totalRevenue.toLocaleString()}
+                      {formatPrice(totalRevenue, acceptedProposals[0]?.currency || "USD")}
                     </span>
                   )}
                 </div>

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient as createClient } from "@/lib/supabase/server";
 import { sendInvoiceEmail } from "@/lib/email";
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+const APP_URL = "https://proposalai.app";
 
 export async function PUT(
   request: NextRequest,
@@ -51,7 +51,7 @@ export async function PUT(
         user_id: user.id,
         type: "invoice_paid",
         title: "Invoice Paid! 💰",
-        message: `${invoice.invoice_number} marked as paid ($${invoice.total_amount?.toLocaleString()})`,
+        message: `${invoice.invoice_number} marked as paid (${invoice.total_amount?.toLocaleString()} ${invoice.currency || "USD"})`,
         link: `/dashboard/invoices/${id}`,
       });
 
@@ -73,7 +73,7 @@ export async function PUT(
           currency: invoice.currency,
           dueDate: invoice.due_date,
           freelancerName,
-          invoiceUrl: `${APP_URL}/dashboard/invoices/${id}`,
+          invoiceUrl: `${APP_URL}/api/invoices/${id}/pdf`,
         });
         return NextResponse.json({ success: true, message: `Reminder sent to ${clientEmail}` });
       } catch (emailErr: any) {

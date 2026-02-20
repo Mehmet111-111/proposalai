@@ -177,7 +177,7 @@ export default function LandingPage() {
                     <div className="w-3 h-3 rounded-full bg-emerald-400" />
                   </div>
                   <div className="flex-1 mx-4">
-                    <div className="bg-slate-700 rounded-lg px-4 py-1.5 text-xs text-slate-400 text-center">proposalai.com/dashboard</div>
+                    <div className="bg-slate-700 rounded-lg px-4 py-1.5 text-xs text-slate-400 text-center">proposalai.app/dashboard</div>
                   </div>
                 </div>
                 {/* Dashboard content mockup */}
@@ -334,6 +334,54 @@ export default function LandingPage() {
                   {plan.cta}
                 </Link>
               </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section id="faq" className="py-20 sm:py-28 bg-slate-50 px-4">
+        <div className="max-w-3xl mx-auto">
+          <div className="text-center mb-16">
+            <p className="text-sm font-semibold text-emerald-600 uppercase tracking-wider mb-3">FAQ</p>
+            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900">Common questions</h2>
+          </div>
+          <div className="space-y-4">
+            {[
+              {
+                q: "How does the AI generate proposals?",
+                a: "Our AI analyzes your project description, industry, and requirements to create a comprehensive proposal with scope of work, timeline, deliverables, and 3-tier pricing — all tailored to your specific project.",
+              },
+              {
+                q: "Can I edit the AI-generated proposals?",
+                a: "Absolutely! Every section is fully editable. You can modify the title, scope, timeline, pricing packages, features, and terms before sending to your client.",
+              },
+              {
+                q: "How do clients accept proposals?",
+                a: "Clients receive a unique link to view your proposal. They can choose a pricing package and click Accept — no account needed. You get notified instantly and an invoice is auto-generated.",
+              },
+              {
+                q: "What currencies are supported?",
+                a: "We support USD, EUR, GBP, TRY, CAD, and AUD. Choose your currency when creating a proposal and everything adjusts automatically.",
+              },
+              {
+                q: "Is there a free plan?",
+                a: "Yes! The free plan includes 3 proposals per month with AI generation, link sharing, and email notifications. No credit card required.",
+              },
+              {
+                q: "Can I export proposals as PDF?",
+                a: "Yes, both you and your clients can download any proposal as a professional PDF document with your branding.",
+              },
+            ].map((faq, i) => (
+              <details key={i} className="group bg-white rounded-xl border border-slate-100 hover:border-slate-200 transition-colors">
+                <summary className="flex items-center justify-between px-6 py-5 cursor-pointer list-none">
+                  <span className="text-sm font-semibold text-slate-900 pr-4">{faq.q}</span>
+                  <span className="text-slate-400 group-open:rotate-45 transition-transform text-xl font-light flex-shrink-0">+</span>
+                </summary>
+                <div className="px-6 pb-5 -mt-1">
+                  <p className="text-sm text-slate-500 leading-relaxed">{faq.a}</p>
+                </div>
+              </details>
             ))}
           </div>
         </div>

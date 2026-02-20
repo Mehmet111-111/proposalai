@@ -91,7 +91,7 @@ export async function POST(
         user_id: proposal.user_id,
         type: "proposal_accepted",
         title: "Proposal Accepted! 🎉",
-        message: `${clientName || "Client"} accepted "${proposal.title}" (${selectedPackage || "Standard"} - $${totalAmount.toLocaleString()})`,
+        message: `${clientName || "Client"} accepted "${proposal.title}" (${selectedPackage || "Standard"} - ${totalAmount.toLocaleString()} ${proposal.currency || "USD"})`,
         link: `/dashboard/proposals/${proposal.id}`,
       });
 

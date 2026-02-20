@@ -2,6 +2,7 @@ import { createServerSupabaseClient as createClient } from "@/lib/supabase/serve
 import { redirect, notFound } from "next/navigation";
 import { ArrowLeft, Mail, Building, FileText, DollarSign, Clock } from "lucide-react";
 import Link from "next/link";
+import { formatPrice } from "@/lib/currency";
 
 export default async function ClientDetailPage({
   params,
@@ -91,7 +92,7 @@ export default async function ClientDetailPage({
             <DollarSign className="w-4 h-4 text-emerald-600" />
             <span className="text-sm text-slate-500">Revenue</span>
           </div>
-          <p className="text-2xl font-bold text-slate-900">${totalRevenue.toLocaleString()}</p>
+          <p className="text-2xl font-bold text-slate-900">{formatPrice(totalRevenue, proposals?.[0]?.currency || "USD")}</p>
         </div>
         <div className="bg-white rounded-xl border border-slate-200 p-5">
           <div className="flex items-center gap-2 mb-2">
@@ -118,7 +119,7 @@ export default async function ClientDetailPage({
                   <p className="text-xs text-slate-500">{new Date(p.created_at).toLocaleDateString()}</p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-sm font-semibold text-slate-900">${p.total_amount?.toLocaleString() || "0"}</span>
+                  <span className="text-sm font-semibold text-slate-900">{formatPrice(p.total_amount || 0, p.currency)}</span>
                   <span className={`text-xs px-2 py-0.5 rounded-full font-medium capitalize ${statusColors[p.status] || ""}`}>
                     {p.status}
                   </span>
@@ -145,7 +146,7 @@ export default async function ClientDetailPage({
                   <p className="text-xs text-slate-500">{new Date(inv.created_at).toLocaleDateString()}</p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-sm font-semibold text-slate-900">${inv.total_amount?.toLocaleString() || "0"}</span>
+                  <span className="text-sm font-semibold text-slate-900">{formatPrice(inv.total_amount || 0, inv.currency)}</span>
                   <span className={`text-xs px-2 py-0.5 rounded-full font-medium capitalize ${statusColors[inv.status] || ""}`}>
                     {inv.status}
                   </span>

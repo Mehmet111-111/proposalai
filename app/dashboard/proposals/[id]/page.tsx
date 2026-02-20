@@ -197,7 +197,7 @@ export default async function ProposalDetailPage({
                 <div key={i} className={`rounded-xl border-2 p-6 ${i === 1 ? "border-emerald-500 bg-emerald-50" : "border-slate-200"}`}>
                   {i === 1 && <span className="text-xs font-bold text-emerald-600 uppercase mb-2 block">Recommended</span>}
                   <h4 className="font-bold text-slate-900">{pkg.name}</h4>
-                  <p className="text-3xl font-bold text-slate-900 my-3">${pkg.price?.toLocaleString()}</p>
+                  <p className="text-3xl font-bold text-slate-900 my-3">{formatPrice(pkg.price || 0, proposal.currency)}</p>
                   {pkg.description && <p className="text-sm text-slate-500 mb-4">{pkg.description}</p>}
                   <ul className="space-y-2">
                     {pkg.features?.map((f: string, j: number) => (

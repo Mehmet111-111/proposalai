@@ -9,6 +9,7 @@ import {
   CheckCircle,
   Loader2,
 } from "lucide-react";
+import { getCurrencySymbol } from "@/lib/currency";
 import {
   XAxis,
   YAxis,
@@ -77,6 +78,8 @@ export default function AnalyticsPage() {
     .filter((p) => p.status === "accepted")
     .reduce((sum, p) => sum + (p.total_amount || 0), 0);
   const avgDealSize = accepted > 0 ? Math.round(totalRevenue / accepted) : 0;
+  const primaryCurrency = proposals.find(p => p.currency)?.currency || "USD";
+  const currSymbol = getCurrencySymbol(primaryCurrency);
 
   // Status distribution for pie chart
   const statusData = Object.entries(
@@ -167,8 +170,8 @@ export default function AnalyticsPage() {
             </div>
             <span className="text-sm text-slate-500">Total Revenue</span>
           </div>
-          <p className="text-2xl font-bold text-slate-900">${totalRevenue.toLocaleString()}</p>
-          <p className="text-xs text-slate-400 mt-1">Avg ${avgDealSize.toLocaleString()}/deal</p>
+          <p className="text-2xl font-bold text-slate-900">{currSymbol}{totalRevenue.toLocaleString()}</p>
+          <p className="text-xs text-slate-400 mt-1">Avg {currSymbol}{avgDealSize.toLocaleString()}/deal</p>
         </div>
 
         <div className="bg-white rounded-xl border border-slate-200 p-5">
@@ -193,9 +196,9 @@ export default function AnalyticsPage() {
               <AreaChart data={monthlyData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
                 <XAxis dataKey="month" tick={{ fontSize: 12, fill: "#94a3b8" }} />
-                <YAxis tick={{ fontSize: 12, fill: "#94a3b8" }} tickFormatter={(v) => `$${v}`} />
+                <YAxis tick={{ fontSize: 12, fill: "#94a3b8" }} tickFormatter={(v) => `${currSymbol}${v}`} />
                 <Tooltip
-                  formatter={(value: number) => [`$${value.toLocaleString()}`, "Revenue"]}
+                  formatter={(value: number) => [`${currSymbol}${value.toLocaleString()}`, "Revenue"]}
                   contentStyle={{ borderRadius: 8, border: "1px solid #e2e8f0" }}
                 />
                 <defs>

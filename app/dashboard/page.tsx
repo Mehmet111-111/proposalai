@@ -150,7 +150,7 @@ export default async function DashboardPage() {
           <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center">
             <DollarSign className="w-5 h-5 text-emerald-600" />
           </div>
-          <p className="text-2xl font-bold text-slate-900 mt-3">${totalRevenue.toLocaleString()}</p>
+          <p className="text-2xl font-bold text-slate-900 mt-3">{getSymbol(proposals?.[0]?.currency || 'USD')}{totalRevenue.toLocaleString()}</p>
           <p className="text-xs text-slate-400 mt-0.5">Total Revenue</p>
         </div>
         <div className="bg-white rounded-2xl border border-slate-100 p-5 hover:shadow-md transition-shadow">
